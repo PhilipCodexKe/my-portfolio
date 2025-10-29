@@ -30,6 +30,9 @@ body {
     background-position: center 0;
     font-size: 0.8rem;
   }
+  .brand {
+    font-size: 0.8rem;
+  }
   .hero {
     padding: 0;
     margin-top: 0;
