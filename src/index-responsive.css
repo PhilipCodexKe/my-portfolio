@@ -26,6 +26,14 @@ body {
 }
 
 @media (max-width: 1024px) {
+  body {
+    background-position: center 0;
+    font-size: 0.8rem;
+  }
+  .hero {
+    padding: 0;
+    margin-top: 0;
+  }
   .hero-left h1 {
     font-size: clamp(2rem, 3.6vw, 2.6rem);
   }
