@@ -37,6 +37,9 @@ body {
   .hero-left h1 {
     font-size: clamp(2rem, 3.6vw, 2.6rem);
   }
+  .hero-left {
+    width: 70%;
+  }
   .hero-grid {
     grid-template-columns: 1fr 320px;
     gap: calc(var(--gap-md));
