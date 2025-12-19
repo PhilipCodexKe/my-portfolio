@@ -173,6 +173,19 @@ body {
   border-radius: 8px;
   font-size: 13px;
 }
+
+.website-link {
+  background: #9aa4b2;
+  padding: 6px 8px;
+  border-radius: 8px;
+  font-size: 13px;
+  text-decoration: none;
+  color: #04203a;
+}
+.website-link:hover {
+  background: #60a5fa;
+}
+
 .about,
 .work {
   padding: 40px;
