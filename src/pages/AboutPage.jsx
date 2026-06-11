@@ -11,13 +11,11 @@ function AboutPage({ navigate }) {
           style={{ border: "none", boxShadow: "none" }}
         />
         <span className="pill-badge">About Me</span>
-        <h1 style={{ fontSize: "clamp(1.8rem, 10vw, 6rem)" }}>
-          Philip Wafula
-        </h1>
+        <h1 style={{ fontSize: "clamp(1.8rem, 10vw, 6rem)" }}>Philip Wafula</h1>
         <p style={{ maxWidth: "700px", fontSize: "1.2rem" }}>
-          I'm a Software Engineer based in Nairobi, Kenya — focused on
-          crafting scalable, performant web architectures, immersive 3D
-          browser experiences, and clean backend systems that just work.
+          I'm a Software Engineer based in Nairobi, Kenya — focused on crafting
+          scalable, performant web architectures, immersive 3D browser
+          experiences, and clean backend systems that just work.
         </p>
         <a
           className="primary-cta button-blue"
@@ -36,9 +34,7 @@ function AboutPage({ navigate }) {
           {experience.map((exp, i) => (
             <div key={i} className="work-history-card">
               <div className="work-history-header">
-                <div className="work-history-logo">
-                  {exp.company.charAt(0)}
-                </div>
+                <div className="work-history-logo">{exp.company.charAt(0)}</div>
                 <div className="work-history-meta">
                   <h3>{exp.company}</h3>
                   <h4>{exp.role}</h4>
@@ -126,10 +122,14 @@ function AboutPage({ navigate }) {
         <h2 className="section-title">Beyond the Screen</h2>
         <div className="photo-gallery">
           {[
-            "/assets/game-rpg.jpg",
-            "/assets/chrome-dino.jpg",
-            "/assets/about.png",
-            "/assets/game.jpg",
+            "/assets/1.jpeg",
+            "/assets/2.jpeg",
+            "/assets/3.jpeg",
+            "/assets/4.jpeg",
+            "/assets/5.jpeg",
+            "/assets/6.jpeg",
+            "/assets/7.jpeg",
+            "/assets/8.jpeg",
           ].map((src, i) => (
             <div className="gallery-img-wrapper" key={i}>
               <img
