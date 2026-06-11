@@ -1,0 +1,18 @@
+/* ── Dark Mode ── */
+[data-theme="dark"] {
+  --bg: #121212;
+  --bg-card: #1e1e1e; /* Slightly brighter than background */
+  --bg-card-hover: #2a2a2a;
+  --color-text: #ffffff;
+  --color-text-muted: #a0a0a0;
+  --color-border: rgba(255, 255, 255, 0.1);
+  --color-accent: #ffffff;
+  --shadow-card: 0 2px 12px rgba(0, 0, 0, 0.3);
+  --shadow-card-hover: 0 8px 24px rgba(0, 0, 0, 0.5);
+  --nav-bg: rgba(30, 30, 30, 0.75);
+  --nav-active-bg: rgba(255, 255, 255, 0.1);
+  --invert: 1;
+  .connect-btn {
+    color: #0d0404;
+  }
+}
