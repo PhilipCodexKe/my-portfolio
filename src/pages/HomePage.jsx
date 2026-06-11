@@ -44,8 +44,8 @@ function HomePage({ navigate, setCaseStudy }) {
             <h3>Software Engineer</h3>
             <p>
               A detail-driven developer based in Nairobi, Kenya, building
-              polished web applications, 3D browser games, and scalable
-              backend systems.
+              polished web applications, 3D browser games, and scalable backend
+              systems.
             </p>
           </div>
           <div className="grid-item">
@@ -53,8 +53,8 @@ function HomePage({ navigate, setCaseStudy }) {
             <h3>Precision & Craft</h3>
             <p>
               Every line of code should serve a purpose. I prioritize clean
-              execution, accessibility, and organic user feedback in
-              everything I build.
+              execution, accessibility, and organic user feedback in everything
+              I build.
             </p>
           </div>
           <div className="grid-item">
@@ -62,8 +62,8 @@ function HomePage({ navigate, setCaseStudy }) {
             <h3>Full-Stack + 3D</h3>
             <p>
               I bridge robust backend engineering with immersive frontend
-              experiences — from WebSocket APIs to Three.js game worlds, all
-              in one stack.
+              experiences — from WebSocket APIs to Three.js game worlds, all in
+              one stack.
             </p>
           </div>
         </div>
@@ -72,40 +72,62 @@ function HomePage({ navigate, setCaseStudy }) {
       {/* Why Work With Me (Stats) */}
       <section className="container">
         <h2 className="section-title">Why Work With Me</h2>
+
         <div className="stats-grid">
           <div className="stat-item">
-            <div className="stat-num">9+</div>
-            <div className="stat-label">Successful Projects Delivered</div>
+            <div className="stat-num">10+</div>
+            <div className="stat-label">Projects Delivered</div>
           </div>
+
           <div className="stat-item">
             <div className="stat-num">3+</div>
-            <div className="stat-label">
-              Years of Development Experience
-            </div>
+            <div className="stat-label">Years Building Software</div>
           </div>
+
           <div className="stat-item">
             <div className="stat-num">3D</div>
-            <div className="stat-label">
-              WebGL / Three.js Game Specialist
-            </div>
+            <div className="stat-label">Interactive Web Experiences</div>
           </div>
+
+          <div className="stat-item">
+            <div className="stat-num">Apps</div>
+            <div className="stat-label">Cross-Platform Mobile Development</div>
+          </div>
+
+          <div className="stat-item">
+            <div className="stat-num">API</div>
+            <div className="stat-label">Scalable Backend Systems</div>
+          </div>
+
+          <div className="stat-item">
+            <div className="stat-num">P2P</div>
+            <div className="stat-label">Real-Time Networking Solutions</div>
+          </div>
+
+          <div className="stat-item">
+            <div className="stat-num">Cloud</div>
+            <div className="stat-label">Modern Deployment Architectures</div>
+          </div>
+
           <div className="stat-item">
             <div className="stat-num">∞</div>
-            <div className="stat-label">
-              Passion for Clean, Scalable Code
-            </div>
+            <div className="stat-label">Continuous Learning & Innovation</div>
           </div>
         </div>
+
         <div className="tools-grid">
           {[
             "JavaScript",
             "TypeScript",
             "React",
-            "Three.js",
             "Node.js",
-            "Vite",
-            "HTML5",
-            "CSS3",
+            "Python",
+            "Django",
+            "Flutter",
+            "PHP",
+            "Three.js",
+            "PostgreSQL",
+            "Supabase",
             "WebSockets",
             "Git",
           ].map((tool) => (
@@ -202,10 +224,7 @@ function HomePage({ navigate, setCaseStudy }) {
         <h2 className="section-title">Frequently Asked Questions</h2>
         <div className="faq-list">
           {faqs.map((faq, i) => (
-            <div
-              key={i}
-              className={`faq-item ${openFaq === i ? "open" : ""}`}
-            >
+            <div key={i} className={`faq-item ${openFaq === i ? "open" : ""}`}>
               <button
                 className="faq-trigger"
                 onClick={() => setOpenFaq(openFaq === i ? null : i)}
