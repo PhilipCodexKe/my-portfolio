@@ -15,7 +15,10 @@ function App() {
   });
 
   const [theme, setTheme] = useState(
-    window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"
+    window.matchMedia &&
+      window.matchMedia("(prefers-color-scheme: dark)").matches
+      ? "dark"
+      : "light",
   );
 
   useEffect(() => {
@@ -194,6 +197,7 @@ function App() {
       date: "May 2025",
       excerpt:
         "How I approach creating performant, visually rich 3D browser games and interactive experiences.",
+      img: "/assets/blog-threejs.png",
     },
     {
       title: "Real-Time Architecture: WebSockets at Scale",
@@ -201,6 +205,7 @@ function App() {
       date: "Apr 2025",
       excerpt:
         "Patterns and lessons learned from building WebSocket-driven real-time applications.",
+      img: "/assets/blog-websockets.png",
     },
     {
       title: "The Art of Clean Code in JavaScript",
@@ -208,6 +213,7 @@ function App() {
       date: "Mar 2025",
       excerpt:
         "My approach to writing maintainable, scalable, and beautiful JavaScript codebases.",
+      img: "/assets/backend.webp",
     },
   ];
 
@@ -354,9 +360,17 @@ function App() {
         <div className="header-right">
           <button className="theme-toggle" onClick={toggleTheme}>
             {theme === "light" ? (
-              <img src="/assets/moon.png" alt="Dark Mode" style={{ width: "24px", height: "24px" }} />
+              <img
+                src="/assets/moon.png"
+                alt="Dark Mode"
+                style={{ width: "24px", height: "24px" }}
+              />
             ) : (
-              <img src="/assets/sun.png" alt="Light Mode" style={{ width: "24px", height: "24px" }} />
+              <img
+                src="/assets/sun.png"
+                alt="Light Mode"
+                style={{ width: "24px", height: "24px" }}
+              />
             )}
           </button>
           <a className="connect-btn" href="#contact">
@@ -622,16 +636,17 @@ function App() {
                   onClick={() => navigate("blog")}
                   style={{ cursor: "pointer" }}
                 >
-                  <div
-                    className="blog-img-wrapper"
-                    style={{
-                      background: `hsl(${200 + i * 40}, 20%, 15%)`,
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                    }}
-                  >
-                    <span style={{ fontSize: "3rem", opacity: 0.2 }}>✦</span>
+                  <div className="blog-img-wrapper">
+                    <img
+                      src={post.img}
+                      alt={post.title}
+                      style={{
+                        width: "100%",
+                        height: "100%",
+                        objectFit: "cover",
+                      }}
+                      loading="lazy"
+                    />
                   </div>
                   <div className="blog-info">
                     <div className="blog-meta">
@@ -863,13 +878,7 @@ function App() {
           <section className="container" style={{ paddingTop: 0 }}>
             <div className="blog-grid-new">
               {blogPosts.map((post, i) => {
-                const img =
-                  post.img ||
-                  (i === 0
-                    ? "/assets/chrome-dino.jpg"
-                    : i === 1
-                      ? "/assets/game.jpg"
-                      : "/assets/backend.webp");
+                const img = post.img;
                 return (
                   <div key={i} className="blog-card-new">
                     <div className="blog-card-img-wrapper">
