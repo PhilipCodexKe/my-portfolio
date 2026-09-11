@@ -7,6 +7,7 @@ import HomePage from "./pages/HomePage";
 import ProjectsPage from "./pages/ProjectsPage";
 import AboutPage from "./pages/AboutPage";
 import BlogPage from "./pages/BlogPage";
+import GraphicsDesignPage from "./pages/GraphicsDesignPage";
 import CaseStudyPage from "./pages/CaseStudyPage";
 
 function App() {
@@ -106,7 +107,7 @@ function App() {
 
       {activeView === "about" && <AboutPage navigate={navigate} />}
 
-      {activeView === "blog" && <BlogPage />}
+      {activeView === "blog" && <GraphicsDesignPage />}
 
       {/* Footer / Contact */}
       <Footer

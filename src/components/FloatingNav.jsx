@@ -9,13 +9,6 @@ function FloatingNav({ activeView, navigate }) {
         Home
       </a>
       <a
-        className={`nav-item ${activeView === "projects" ? "active" : ""}`}
-        href="#/projects"
-        onClick={() => navigate("projects")}
-      >
-        Portfolio
-      </a>
-      <a
         className={`nav-item ${activeView === "about" ? "active" : ""}`}
         href="#/about"
         onClick={() => navigate("about")}
@@ -23,11 +16,18 @@ function FloatingNav({ activeView, navigate }) {
         About
       </a>
       <a
+        className={`nav-item ${activeView === "projects" ? "active" : ""}`}
+        href="#/projects"
+        onClick={() => navigate("projects")}
+      >
+        Websites
+      </a>
+      <a
         className={`nav-item ${activeView === "blog" ? "active" : ""}`}
         href="#/blog"
         onClick={() => navigate("blog")}
       >
-        Blog
+        Graphics Design
       </a>
     </nav>
   );
