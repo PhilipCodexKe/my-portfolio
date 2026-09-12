@@ -9,6 +9,8 @@ import AboutPage from "./pages/AboutPage";
 import BlogPage from "./pages/BlogPage";
 import GraphicsDesignPage from "./pages/GraphicsDesignPage";
 import CaseStudyPage from "./pages/CaseStudyPage";
+import AdminGraphicsPage from "./pages/AdminGraphicsPage";
+import { GraphicsProvider } from "./context/GraphicsContext";
 
 function App() {
   const [activeView, setActiveView] = useState("home");
@@ -43,6 +45,7 @@ function App() {
       if (hash === "projects") setActiveView("projects");
       else if (hash === "about") setActiveView("about");
       else if (hash === "blog") setActiveView("blog");
+      else if (hash === "admin" || hash === "studio") setActiveView("admin");
       else setActiveView("home");
       setCaseStudy(null);
     };
@@ -80,45 +83,51 @@ function App() {
   // ── Case study view ───────────────────────────────────
   if (caseStudy) {
     return (
-      <CaseStudyPage
-        caseStudyId={caseStudy}
-        setCaseStudy={setCaseStudy}
-        formData={formData}
-        handleChange={handleChange}
-        handleSubmit={handleSubmit}
-        navigate={navigate}
-      />
+      <GraphicsProvider>
+        <CaseStudyPage
+          caseStudyId={caseStudy}
+          setCaseStudy={setCaseStudy}
+          formData={formData}
+          handleChange={handleChange}
+          handleSubmit={handleSubmit}
+          navigate={navigate}
+        />
+      </GraphicsProvider>
     );
   }
 
   // ── Main views ────────────────────────────────────────
   return (
-    <div className="app-container">
-      <Header navigate={navigate} theme={theme} toggleTheme={toggleTheme} />
-      <FloatingNav activeView={activeView} navigate={navigate} />
+    <GraphicsProvider>
+      <div className="app-container">
+        <Header navigate={navigate} theme={theme} toggleTheme={toggleTheme} />
+        <FloatingNav activeView={activeView} navigate={navigate} />
 
-      {activeView === "home" && (
-        <HomePage navigate={navigate} setCaseStudy={setCaseStudy} />
-      )}
+        {activeView === "home" && (
+          <HomePage navigate={navigate} setCaseStudy={setCaseStudy} />
+        )}
 
-      {activeView === "projects" && (
-        <ProjectsPage setCaseStudy={setCaseStudy} />
-      )}
+        {activeView === "projects" && (
+          <ProjectsPage setCaseStudy={setCaseStudy} />
+        )}
 
-      {activeView === "about" && <AboutPage navigate={navigate} />}
+        {activeView === "about" && <AboutPage navigate={navigate} />}
 
-      {activeView === "blog" && <GraphicsDesignPage />}
+        {activeView === "blog" && <GraphicsDesignPage navigate={navigate} />}
 
-      {/* Footer / Contact */}
-      <Footer
-        formData={formData}
-        handleChange={handleChange}
-        handleSubmit={handleSubmit}
-        navigate={navigate}
-      />
+        {activeView === "admin" && <AdminGraphicsPage navigate={navigate} />}
 
-      <WhatsAppFloat />
-    </div>
+        {/* Footer / Contact */}
+        <Footer
+          formData={formData}
+          handleChange={handleChange}
+          handleSubmit={handleSubmit}
+          navigate={navigate}
+        />
+
+        <WhatsAppFloat />
+      </div>
+    </GraphicsProvider>
   );
 }
 

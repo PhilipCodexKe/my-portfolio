@@ -194,7 +194,12 @@ function Footer({ formData, handleChange, handleSubmit, navigate }) {
                 </li>
                 <li>
                   <a href="#/blog" onClick={() => navigate("blog")}>
-                    Blog
+                    Graphics Art
+                  </a>
+                </li>
+                <li>
+                  <a href="#/admin" onClick={() => navigate("admin")} style={{ opacity: 0.6, fontSize: "0.82rem" }}>
+                    Studio CMS ⚙️
                   </a>
                 </li>
               </ul>

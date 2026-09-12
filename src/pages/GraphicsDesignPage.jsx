@@ -1,12 +1,23 @@
 import { useState, useRef } from "react";
-import {
-  gfxHeroData,
-  gfxChoices,
-  gfxPosterShowcase,
-  gfxTrustBadges,
-} from "../data";
+import { useGraphics } from "../context/GraphicsContext";
 
-function GraphicsDesignPage() {
+// Helper to clean display title (removes bracketed text/filenames like "(ChatGPT...)" or "(Your paragraph text...)")
+const formatDisplayTitle = (rawTitle) => {
+  if (!rawTitle) return "";
+  const cleaned = rawTitle
+    .replace(/\s*\([^)]*\)+/g, "")
+    .replace(/[()]/g, "")
+    .trim();
+  return cleaned || rawTitle;
+};
+
+function GraphicsDesignPage({ navigate }) {
+  const {
+    posters: gfxPosterShowcase,
+    choices: gfxChoices,
+    heroData: gfxHeroData,
+    trustBadges: gfxTrustBadges,
+  } = useGraphics();
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [activeModalImg, setActiveModalImg] = useState(null);
   const slantedTrackRef = useRef(null);
@@ -21,10 +32,13 @@ function GraphicsDesignPage() {
     }
   };
 
+  // Derive unique categories dynamically based on active posters
+  const dynamicCategories = Array.from(
+    new Set(gfxPosterShowcase.map((item) => item.category).filter(Boolean)),
+  );
   const categories = [
     { id: "all", label: "All" },
-    { id: "Posters", label: "Posters" },
-    { id: "Logos", label: "Logos" },
+    ...dynamicCategories.map((cat) => ({ id: cat, label: cat })),
   ];
 
   const filteredPosters =
@@ -199,13 +213,15 @@ function GraphicsDesignPage() {
                   <div className="gfx-slanted-img-frame">
                     <img
                       src={item.img}
-                      alt={item.title}
+                      alt={formatDisplayTitle(item.title)}
                       className="gfx-slanted-img"
                       loading="lazy"
                     />
                   </div>
                   <div className="gfx-slanted-badge">
-                    <span className="gfx-badge-text">{item.title}</span>
+                    <span className="gfx-badge-text">
+                      {formatDisplayTitle(item.title)}
+                    </span>
                   </div>
                 </div>
               ))}
@@ -220,7 +236,7 @@ function GraphicsDesignPage() {
           <div className="gfx-banner-content">
             <span className="gfx-banner-pill">PORTFOLIO ARCHIVE</span>
             <h2 className="gfx-banner-title">
-              VISUAL SHOWCASE <span>2025</span>
+              VISUAL SHOWCASE <span>2026</span>
             </h2>
             <p className="gfx-banner-sub">
               Carefully curated selection of poster art, typography experiments,
@@ -228,7 +244,7 @@ function GraphicsDesignPage() {
             </p>
           </div>
 
-          {/* Filter Pills */}
+          {/* Filter Pills and Studio Button */}
           <div className="gfx-filter-pills-row">
             {categories.map((cat) => (
               <button
@@ -242,6 +258,16 @@ function GraphicsDesignPage() {
                 {cat.label}
               </button>
             ))}
+            {navigate && (
+              <button
+                type="button"
+                className="gfx-filter-pill gfx-admin-shortcut-pill"
+                onClick={() => navigate("admin")}
+                title="Open Studio Admin to upload new posters"
+              >
+                + Add / Manage Art
+              </button>
+            )}
           </div>
         </div>
 
@@ -256,22 +282,26 @@ function GraphicsDesignPage() {
               <div className="gfx-poster-img-wrap">
                 <img
                   src={item.img}
-                  alt={item.title}
+                  alt={formatDisplayTitle(item.title)}
                   className="gfx-poster-img"
                   loading="lazy"
                 />
                 <div className="gfx-poster-hover-overlay">
                   <span className="gfx-poster-tag">{item.category}</span>
-                  <h3 className="gfx-poster-overlay-title">{item.title}</h3>
+                  <h3 className="gfx-poster-overlay-title">
+                    {formatDisplayTitle(item.title)}
+                  </h3>
                   <p className="gfx-poster-overlay-desc">{item.description}</p>
                   <span className="gfx-poster-click-hint">
-                    Click to enlarge 🔍
+                    Click to enlarge
                   </span>
                 </div>
               </div>
               <div className="gfx-poster-meta-bottom">
                 <div className="gfx-poster-meta-text">
-                  <h4 className="gfx-poster-name">{item.title}</h4>
+                  <h4 className="gfx-poster-name">
+                    {formatDisplayTitle(item.title)}
+                  </h4>
                   <span className="gfx-poster-client">
                     {item.client} • {item.year}
                   </span>
