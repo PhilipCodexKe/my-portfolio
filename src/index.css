@@ -71,7 +71,7 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1.5rem 4vw;
+  padding: 0.75rem 4vw;
   position: sticky;
   top: 0;
   z-index: 100;
@@ -1429,7 +1429,7 @@ h4 {
 
 @media (max-width: 768px) {
   .site-header {
-    padding: 1rem 4vw;
+    padding: 0.5rem 4vw;
   }
   .floating-nav {
     bottom: 16px;
@@ -1489,7 +1489,7 @@ h4 {
     padding: 3rem 4vw;
   }
   .site-header {
-    padding: 1rem 3vw;
+    padding: 0.5rem 3vw;
   }
   .brand-name {
     font-size: 0.9rem;

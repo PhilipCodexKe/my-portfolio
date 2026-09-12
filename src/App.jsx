@@ -1,8 +1,9 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Header from "./components/Header";
 import FloatingNav from "./components/FloatingNav";
 import Footer from "./components/Footer";
 import WhatsAppFloat from "./components/WhatsAppFloat";
+import PageShell from "./components/PageShell";
 import HomePage from "./pages/HomePage";
 import ProjectsPage from "./pages/ProjectsPage";
 import AboutPage from "./pages/AboutPage";
@@ -15,6 +16,8 @@ import { GraphicsProvider } from "./context/GraphicsContext";
 function App() {
   const [activeView, setActiveView] = useState("home");
   const [caseStudy, setCaseStudy] = useState(null);
+  const [mountedViews, setMountedViews] = useState(() => new Set(["home"]));
+  const scrollPositions = useRef({});
 
   const [formData, setFormData] = useState({
     name: "",
@@ -42,11 +45,17 @@ function App() {
   useEffect(() => {
     const handleHash = () => {
       const hash = window.location.hash.replace("#/", "").replace("#", "");
-      if (hash === "projects") setActiveView("projects");
-      else if (hash === "about") setActiveView("about");
-      else if (hash === "blog") setActiveView("blog");
-      else if (hash === "admin" || hash === "studio") setActiveView("admin");
-      else setActiveView("home");
+      let newView = "home";
+      if (hash === "projects") newView = "projects";
+      else if (hash === "about") newView = "about";
+      else if (hash === "blog") newView = "blog";
+      else if (hash === "admin" || hash === "studio") newView = "admin";
+
+      setActiveView(newView);
+      setMountedViews((prev) => {
+        if (prev.has(newView)) return prev;
+        return new Set(prev).add(newView);
+      });
       setCaseStudy(null);
     };
     handleHash();
@@ -55,8 +64,16 @@ function App() {
   }, []);
 
   const navigate = (view) => {
+    // Save current scroll position before leaving
+    scrollPositions.current[activeView] = window.scrollY;
+
     window.location.hash = `#/${view === "home" ? "" : view}`;
-    window.scrollTo({ top: 0, behavior: "smooth" });
+
+    // Restore saved position for target view, or scroll to top if first visit
+    requestAnimationFrame(() => {
+      const saved = scrollPositions.current[view];
+      window.scrollTo({ top: saved ?? 0, behavior: "instant" });
+    });
   };
 
   const handleChange = (e) => {
@@ -103,19 +120,27 @@ function App() {
         <Header navigate={navigate} theme={theme} toggleTheme={toggleTheme} />
         <FloatingNav activeView={activeView} navigate={navigate} />
 
-        {activeView === "home" && (
+        <PageShell active={activeView === "home"}>
           <HomePage navigate={navigate} setCaseStudy={setCaseStudy} />
-        )}
+        </PageShell>
 
-        {activeView === "projects" && (
+        <PageShell active={activeView === "projects"}>
           <ProjectsPage setCaseStudy={setCaseStudy} />
-        )}
+        </PageShell>
 
-        {activeView === "about" && <AboutPage navigate={navigate} />}
+        <PageShell active={activeView === "about"}>
+          <AboutPage navigate={navigate} />
+        </PageShell>
 
-        {activeView === "blog" && <GraphicsDesignPage navigate={navigate} />}
+        <PageShell active={activeView === "blog"}>
+          <GraphicsDesignPage navigate={navigate} />
+        </PageShell>
 
-        {activeView === "admin" && <AdminGraphicsPage navigate={navigate} />}
+        <PageShell active={activeView === "admin"}>
+          {mountedViews.has("admin") && (
+            <AdminGraphicsPage navigate={navigate} />
+          )}
+        </PageShell>
 
         {/* Footer / Contact */}
         <Footer

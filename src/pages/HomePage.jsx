@@ -239,41 +239,6 @@ function HomePage({ navigate, setCaseStudy }) {
           ))}
         </div>
       </section>
-
-      {/* Blog Preview */}
-      <section className="container">
-        <h2 className="section-title">From the Blog</h2>
-        <div className="blog-grid">
-          {blogPosts.map((post, i) => (
-            <div
-              key={i}
-              className="blog-card"
-              onClick={() => navigate("blog")}
-              style={{ cursor: "pointer" }}
-            >
-              <div className="blog-img-wrapper">
-                <img
-                  src={post.img}
-                  alt={post.title}
-                  style={{
-                    width: "100%",
-                    height: "100%",
-                    objectFit: "cover",
-                  }}
-                  loading="lazy"
-                />
-              </div>
-              <div className="blog-info">
-                <div className="blog-meta">
-                  <span>{post.category}</span>
-                  <span>{post.date}</span>
-                </div>
-                <h3>{post.title}</h3>
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
     </main>
   );
 }
