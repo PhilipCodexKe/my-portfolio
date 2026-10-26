@@ -1,0 +1,730 @@
+.retro-tv-page {
+  min-height: 100vh;
+  padding: 20px 16px 40px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: radial-gradient(circle at 50% 30%, #201a18 0%, #0d0a09 100%);
+  overflow-x: hidden;
+}
+
+.tv-stage {
+  position: relative;
+  width: 100%;
+  max-width: 1400px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.tv-drop-shadow {
+  position: absolute;
+  bottom: -24px;
+  width: 96%;
+  height: 40px;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(0, 0, 0, 0.85) 0%,
+    rgba(0, 0, 0, 0) 70%
+  );
+  filter: blur(10px);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.tv-cabinet {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9.5;
+  min-height: 480px;
+  max-height: 85vh;
+
+  background:
+    repeating-linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0.015) 0px,
+      rgba(255, 255, 255, 0.015) 2px,
+      rgba(0, 0, 0, 0.03) 3px,
+      transparent 6px
+    ),
+    linear-gradient(
+      180deg,
+      #442718 0%,
+      #341d12 12%,
+      #29160d 50%,
+      #1f1008 85%,
+      #170b05 100%
+    );
+  border-radius: 8px;
+
+  box-shadow:
+    0 25px 50px -12px rgba(0, 0, 0, 0.8),
+    0 10px 20px rgba(0, 0, 0, 0.6),
+    inset 0 2px 2px rgba(255, 210, 170, 0.25),
+    inset 0 -3px 4px rgba(0, 0, 0, 0.9),
+    inset 2px 0 3px rgba(255, 210, 170, 0.1),
+    inset -2px 0 3px rgba(0, 0, 0, 0.8);
+  padding: 10px 12px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  z-index: 2;
+}
+
+.tv-wood-bevel-top {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 6px;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 220, 180, 0.2) 0%,
+    rgba(255, 255, 255, 0.02) 60%,
+    transparent 100%
+  );
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+  pointer-events: none;
+}
+
+.tv-wood-bevel-bottom {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 8px;
+  background: linear-gradient(0deg, rgba(0, 0, 0, 0.7) 0%, transparent 100%);
+  border-bottom-left-radius: 8px;
+  border-bottom-right-radius: 8px;
+  pointer-events: none;
+}
+
+.tv-foot {
+  position: absolute;
+  bottom: -16px;
+  width: 50px;
+  height: 18px;
+  background: linear-gradient(180deg, #1b0e07 0%, #090503 100%);
+  border-radius: 0 0 10px 10px;
+  box-shadow:
+    inset 0 2px 2px rgba(255, 255, 255, 0.1),
+    0 6px 10px rgba(0, 0, 0, 0.9);
+  z-index: -1;
+}
+
+.foot-left {
+  left: 60px;
+}
+
+.foot-right {
+  right: 60px;
+}
+
+.tv-faceplate {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background: #140d09;
+  border-radius: 5px;
+  display: grid;
+  grid-template-columns: 1fr 115px;
+  gap: 10px;
+  padding: 6px;
+  box-sizing: border-box;
+
+  box-shadow:
+    inset 0 4px 8px rgba(0, 0, 0, 0.95),
+    inset 0 -2px 4px rgba(255, 200, 150, 0.08),
+    inset 3px 0 6px rgba(0, 0, 0, 0.8),
+    inset -3px 0 6px rgba(0, 0, 0, 0.8);
+  border: 1px solid rgba(80, 45, 30, 0.4);
+}
+
+.tv-screen-section {
+  position: relative;
+  display: flex;
+  width: 100%;
+  height: 100%;
+}
+
+.tv-outer-bezel {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(145deg, #2b1a13 0%, #170e0a 100%);
+  border-radius: 10px;
+  padding: 6px;
+  box-sizing: border-box;
+  box-shadow:
+    inset 0 3px 4px rgba(255, 220, 180, 0.12),
+    inset 0 -4px 6px rgba(0, 0, 0, 0.9),
+    0 2px 4px rgba(0, 0, 0, 0.8);
+  border: 1px solid rgba(20, 10, 5, 0.8);
+}
+
+.tv-deep-bezel {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background: #0f0a07;
+  border-radius: 12px;
+  padding: 5px;
+  box-sizing: border-box;
+
+  box-shadow:
+    inset 0 8px 16px rgba(0, 0, 0, 0.95),
+    inset 0 -6px 12px rgba(0, 0, 0, 0.9),
+    inset 8px 0 14px rgba(0, 0, 0, 0.85),
+    inset -8px 0 14px rgba(0, 0, 0, 0.85);
+  border: 1.5px solid #080503;
+}
+
+.tv-glass-socket {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background: #181c19;
+  border-radius: 26px;
+  overflow: hidden;
+  box-shadow:
+    inset 0 0 40px rgba(0, 0, 0, 0.9),
+    0 0 1px rgba(255, 255, 255, 0.05);
+}
+
+.tv-glass-socket {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background: #0d0e0d;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow:
+    inset 0 0 50px rgba(0, 0, 0, 0.95),
+    0 0 2px rgba(255, 255, 255, 0.08);
+}
+
+/* ── CRT Screen Content Container ── */
+.crt-screen-content {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background-color: #d1bda2;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  box-sizing: border-box;
+}
+
+/* ── Splashed Water Paint Background ── */
+.crt-paint-splash-bg {
+  position: absolute;
+  inset: 0;
+  background-image: url("/paint-splash.jpg");
+  background-size: cover;
+  background-position: center center;
+  background-repeat: no-repeat;
+  filter: saturate(1.15) contrast(1.05) brightness(0.96);
+  z-index: 1;
+}
+
+/* ── Physical 1980s CRT Tube Curvature & Vignette Shadow ── */
+.crt-tube-curvature-shadow {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 10;
+  box-shadow:
+    inset 0 0 60px 15px rgba(10, 10, 10, 0.88),
+    inset 0 0 100px 35px rgba(0, 0, 0, 0.55),
+    inset 2px 2px 8px rgba(255, 240, 200, 0.22),
+    inset -2px -2px 8px rgba(0, 0, 0, 0.85);
+  border-radius: 20px;
+}
+
+/* ── CRT Phosphor Scanlines ── */
+.crt-scanlines {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 11;
+  background: linear-gradient(
+    rgba(18, 16, 16, 0) 50%,
+    rgba(0, 0, 0, 0.28) 50%
+  );
+  background-size: 100% 3px;
+  opacity: 0.85;
+}
+
+/* ── CRT Tube Phosphor Warmth & Flicker ── */
+.crt-phosphor-glow {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 12;
+  background: radial-gradient(
+    circle at 50% 50%,
+    rgba(255, 230, 180, 0.08) 0%,
+    rgba(20, 30, 25, 0.15) 75%,
+    rgba(0, 0, 0, 0.6) 100%
+  );
+  animation: crtFlicker 0.12s infinite alternate;
+}
+
+/* ── Curved Glass Reflective Glare ── */
+.crt-glass-glare {
+  position: absolute;
+  top: -20%;
+  left: -20%;
+  width: 140%;
+  height: 60%;
+  pointer-events: none;
+  z-index: 13;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.14) 0%,
+    rgba(255, 255, 255, 0.04) 35%,
+    transparent 65%
+  );
+  border-radius: 50%;
+  transform: rotate(-4deg);
+}
+
+@keyframes crtFlicker {
+  0% {
+    opacity: 0.96;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+/* ── Top Bar with 1980s TV Style Clock ── */
+.crt-top-bar {
+  position: relative;
+  z-index: 20;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 24px 32px;
+}
+
+.crt-clock-widget {
+  display: flex;
+  flex-direction: column;
+  user-select: none;
+}
+
+.crt-clock-time {
+  font-family: "Georgia", "Times New Roman", serif, monospace;
+  font-size: 3.4rem;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.5px;
+  color: #f7eedf;
+  text-shadow:
+    0 2px 10px rgba(0, 0, 0, 0.8),
+    0 0 14px rgba(255, 240, 210, 0.4),
+    -1px 0 2px rgba(240, 70, 70, 0.6),
+    1px 0 2px rgba(70, 190, 255, 0.6); /* 1980s chromatic fringing */
+}
+
+.crt-clock-date {
+  margin-top: 6px;
+  font-family: "Georgia", "Times New Roman", serif, sans-serif;
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: #f2e3ce;
+  letter-spacing: 0.3px;
+  text-shadow:
+    0 2px 6px rgba(0, 0, 0, 0.85),
+    -1px 0 2px rgba(240, 70, 70, 0.4),
+    1px 0 2px rgba(70, 190, 255, 0.4);
+}
+
+.crt-top-channel-badge {
+  background: rgba(18, 14, 12, 0.65);
+  border: 1px solid rgba(255, 230, 200, 0.25);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  padding: 5px 12px;
+  border-radius: 4px;
+  color: #f0e0ca;
+  font-family: monospace;
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.9);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+}
+
+/* ── Powered Off Screen ── */
+.crt-powered-off {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle at 50% 50%, #161a17 0%, #080908 100%);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.crt-off-center-point {
+  width: 3px;
+  height: 3px;
+  background: rgba(255, 255, 255, 0.25);
+  border-radius: 50%;
+  box-shadow: 0 0 6px rgba(255, 255, 255, 0.4);
+  margin-bottom: 12px;
+}
+
+.crt-off-msg {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: #3b4740;
+  font-family: monospace;
+  user-select: none;
+}
+
+.crt-off-msg span {
+  font-size: 0.95rem;
+  letter-spacing: 3px;
+  font-weight: 700;
+}
+
+.crt-off-msg small {
+  font-size: 0.72rem;
+  letter-spacing: 1px;
+  margin-top: 4px;
+  opacity: 0.6;
+}
+
+.tv-control-panel {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 4px;
+  background: linear-gradient(180deg, #1d130d 0%, #150d09 100%);
+  border-radius: 6px;
+  border: 1px solid rgba(60, 35, 20, 0.4);
+  box-shadow:
+    inset 0 2px 4px rgba(0, 0, 0, 0.8),
+    inset 0 -2px 4px rgba(255, 255, 255, 0.04);
+}
+
+.tv-dial-cluster {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
+.dial-label-ring {
+  position: absolute;
+  width: 82px;
+  height: 82px;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+.dial-mark {
+  position: absolute;
+  font-size: 9px;
+  font-family: monospace;
+  font-weight: 700;
+  color: rgba(220, 195, 160, 0.65);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.9);
+}
+
+.mark-12 {
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+}
+.mark-u {
+  top: 5px;
+  right: 14px;
+}
+.mark-1 {
+  top: 18px;
+  right: 4px;
+}
+.mark-2 {
+  top: 35px;
+  right: 0;
+}
+.mark-3 {
+  bottom: 22px;
+  right: 4px;
+}
+.mark-4 {
+  bottom: 8px;
+  right: 14px;
+}
+.mark-5 {
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+}
+.mark-6 {
+  bottom: 8px;
+  left: 14px;
+}
+.mark-7 {
+  bottom: 22px;
+  left: 4px;
+}
+.mark-8 {
+  top: 35px;
+  left: 0;
+}
+.mark-9 {
+  top: 18px;
+  left: 4px;
+}
+.mark-10 {
+  top: 5px;
+  left: 14px;
+}
+.mark-11 {
+  top: 0px;
+  left: 32px;
+}
+
+.rotary-knob {
+  position: relative;
+  width: 66px;
+  height: 66px;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle at 40% 35%,
+    #3a322c 0%,
+    #151210 70%,
+    #0c0908 100%
+  );
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow:
+    0 6px 12px rgba(0, 0, 0, 0.9),
+    inset 0 1px 2px rgba(255, 255, 255, 0.25),
+    inset 0 -2px 4px rgba(0, 0, 0, 0.9);
+  transition: transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1);
+  outline: none;
+}
+
+.rotary-knob:hover {
+  filter: brightness(1.1);
+}
+
+.rotary-knob:active {
+  filter: brightness(0.95);
+}
+
+.knob-cap {
+  position: relative;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #443c34 0%, #1b1714 100%);
+  box-shadow:
+    inset 0 2px 2px rgba(255, 255, 255, 0.15),
+    inset 0 -2px 3px rgba(0, 0, 0, 0.8),
+    0 2px 4px rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.knob-cap.small {
+  width: 38px;
+  height: 38px;
+}
+
+.knob-pointer-wing {
+  position: absolute;
+  width: 10px;
+  height: 44px;
+  background: linear-gradient(
+    90deg,
+    #1b1613 0%,
+    #4a3f36 40%,
+    #5a4e44 50%,
+    #221c18 100%
+  );
+  border-radius: 3px;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.8);
+}
+
+.knob-pointer-wing::after {
+  content: "";
+  position: absolute;
+  top: 3px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 2px;
+  height: 10px;
+  background: #f0e2cf;
+  border-radius: 1px;
+}
+
+.knob-pointer-wing.small {
+  width: 8px;
+  height: 34px;
+}
+
+.rotary-knob.volume-knob {
+  width: 54px;
+  height: 54px;
+}
+
+.volume-label-row {
+  display: flex;
+  justify-content: space-between;
+  width: 72px;
+  margin-bottom: 6px;
+  font-size: 8px;
+  font-family: monospace;
+  font-weight: 700;
+  color: rgba(220, 195, 160, 0.6);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.9);
+}
+
+.tv-speaker-grille {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: 82px;
+  padding: 6px 0;
+}
+
+.speaker-slot {
+  width: 100%;
+  height: 3px;
+  background: #090503;
+  border-radius: 2px;
+  box-shadow:
+    inset 0 1px 2px rgba(0, 0, 0, 0.95),
+    0 1px 0 rgba(255, 220, 180, 0.08);
+}
+
+@media (max-width: 768px) {
+  .tv-cabinet {
+    padding: 16px 18px;
+    min-height: 380px;
+  }
+
+  .tv-faceplate {
+    grid-template-columns: 1fr 100px;
+    gap: 12px;
+    padding: 10px;
+  }
+
+  .rotary-knob {
+    width: 52px;
+    height: 52px;
+  }
+
+  .rotary-knob.volume-knob {
+    width: 44px;
+    height: 44px;
+  }
+
+  .dial-label-ring {
+    width: 68px;
+    height: 68px;
+  }
+
+  .tv-speaker-grille {
+    width: 68px;
+    gap: 3px;
+  }
+}
+
+/* ── Floating Menu Shortcut on Video Page ── */
+.video-nav-toggle-btn {
+  position: fixed;
+  top: 18px;
+  left: 20px;
+  z-index: 1200;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: rgba(22, 17, 14, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  color: #f5ede4;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45), 0 0 0 1px rgba(255, 255, 255, 0.05);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.video-nav-toggle-btn:hover {
+  transform: scale(1.08);
+  background: rgba(35, 26, 21, 0.95);
+  border-color: rgba(212, 163, 115, 0.4);
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.55), 0 0 16px rgba(212, 163, 115, 0.2);
+  color: #d4a373;
+}
+
+.video-nav-toggle-btn.active {
+  background: #d4a373;
+  color: #1a0f08;
+  border-color: #e5b98a;
+  box-shadow: 0 6px 20px rgba(212, 163, 115, 0.4);
+}
+
+/* When overlay is active on video page, ensure site-header and floating-nav float cleanly */
+.page-video-active .site-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1100;
+  padding-left: 74px; /* Give space for the floating menu button */
+  animation: slideDownHeader 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.35);
+}
+
+.page-video-active .floating-nav {
+  z-index: 1100;
+  animation: slideUpNav 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes slideDownHeader {
+  from {
+    opacity: 0;
+    transform: translateY(-100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideUpNav {
+  from {
+    opacity: 0;
+    transform: translate(-50%, 20px);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+}
+

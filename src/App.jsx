@@ -11,6 +11,7 @@ import BlogPage from "./pages/BlogPage";
 import GraphicsDesignPage from "./pages/GraphicsDesignPage";
 import CaseStudyPage from "./pages/CaseStudyPage";
 import AdminGraphicsPage from "./pages/AdminGraphicsPage";
+import VideoEditingPage from "./pages/videoEditingPage";
 import { GraphicsProvider } from "./context/GraphicsContext";
 
 function App() {
@@ -41,7 +42,8 @@ function App() {
     setTheme((prevTheme) => (prevTheme === "light" ? "dark" : "light"));
   };
 
-  // Hash-based navigation
+  const [showNavOverlay, setShowNavOverlay] = useState(false);
+
   useEffect(() => {
     const handleHash = () => {
       const hash = window.location.hash.replace("#/", "").replace("#", "");
@@ -50,8 +52,10 @@ function App() {
       else if (hash === "about") newView = "about";
       else if (hash === "blog") newView = "blog";
       else if (hash === "admin" || hash === "studio") newView = "admin";
+      else if (hash === "video") newView = "video";
 
       setActiveView(newView);
+      setShowNavOverlay(false);
       setMountedViews((prev) => {
         if (prev.has(newView)) return prev;
         return new Set(prev).add(newView);
@@ -64,12 +68,11 @@ function App() {
   }, []);
 
   const navigate = (view) => {
-    // Save current scroll position before leaving
     scrollPositions.current[activeView] = window.scrollY;
 
+    setShowNavOverlay(false);
     window.location.hash = `#/${view === "home" ? "" : view}`;
 
-    // Restore saved position for target view, or scroll to top if first visit
     requestAnimationFrame(() => {
       const saved = scrollPositions.current[view];
       window.scrollTo({ top: saved ?? 0, behavior: "instant" });
@@ -97,7 +100,6 @@ function App() {
     if (!win) window.location.href = url;
   };
 
-  // ── Case study view ───────────────────────────────────
   if (caseStudy) {
     return (
       <GraphicsProvider>
@@ -113,12 +115,42 @@ function App() {
     );
   }
 
-  // ── Main views ────────────────────────────────────────
+  const isVideoPage = activeView === "video";
+  const showNav = !isVideoPage || showNavOverlay;
+
   return (
     <GraphicsProvider>
-      <div className="app-container">
-        <Header navigate={navigate} theme={theme} toggleTheme={toggleTheme} />
-        <FloatingNav activeView={activeView} navigate={navigate} />
+      <div className={`app-container ${isVideoPage ? "page-video-active" : ""}`}>
+        {/* Floating Menu Shortcut on Video Page */}
+        {isVideoPage && (
+          <button
+            type="button"
+            className={`video-nav-toggle-btn ${showNavOverlay ? "active" : ""}`}
+            onClick={() => setShowNavOverlay((prev) => !prev)}
+            aria-label={showNavOverlay ? "Close Navigation Menu" : "Open Navigation Menu"}
+            title={showNavOverlay ? "Close Menu" : "Menu"}
+          >
+            {showNavOverlay ? (
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+              </svg>
+            ) : (
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
+                <line x1="3" y1="12" x2="21" y2="12"></line>
+                <line x1="3" y1="6" x2="21" y2="6"></line>
+                <line x1="3" y1="18" x2="21" y2="18"></line>
+              </svg>
+            )}
+          </button>
+        )}
+
+        {showNav && (
+          <>
+            <Header navigate={navigate} theme={theme} toggleTheme={toggleTheme} />
+            <FloatingNav activeView={activeView} navigate={navigate} />
+          </>
+        )}
 
         <PageShell active={activeView === "home"}>
           <HomePage navigate={navigate} setCaseStudy={setCaseStudy} />
@@ -142,7 +174,10 @@ function App() {
           )}
         </PageShell>
 
-        {/* Footer / Contact */}
+        <PageShell active={activeView === "video"}>
+          <VideoEditingPage />
+        </PageShell>
+
         <Footer
           formData={formData}
           handleChange={handleChange}

@@ -27,7 +27,14 @@ function FloatingNav({ activeView, navigate }) {
         href="#/blog"
         onClick={() => navigate("blog")}
       >
-        Graphics Design
+        Graphics
+      </a>
+      <a
+        className={`nav-item ${activeView === "video" ? "active" : ""}`}
+        href="#/video"
+        onClick={() => navigate("video")}
+      >
+        Video
       </a>
     </nav>
   );
