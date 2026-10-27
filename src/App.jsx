@@ -11,8 +11,10 @@ import BlogPage from "./pages/BlogPage";
 import GraphicsDesignPage from "./pages/GraphicsDesignPage";
 import CaseStudyPage from "./pages/CaseStudyPage";
 import AdminGraphicsPage from "./pages/AdminGraphicsPage";
+import AdminVideoPage from "./pages/AdminVideoPage";
 import VideoEditingPage from "./pages/videoEditingPage";
 import { GraphicsProvider } from "./context/GraphicsContext";
+import { VideoProvider } from "./context/VideoContext";
 
 function App() {
   const [activeView, setActiveView] = useState("home");
@@ -53,6 +55,7 @@ function App() {
       else if (hash === "blog") newView = "blog";
       else if (hash === "admin" || hash === "studio") newView = "admin";
       else if (hash === "video") newView = "video";
+      else if (hash === "video-admin" || hash === "admin-video") newView = "video-admin";
 
       setActiveView(newView);
       setShowNavOverlay(false);
@@ -116,78 +119,89 @@ function App() {
   }
 
   const isVideoPage = activeView === "video";
-  const showNav = !isVideoPage || showNavOverlay;
+  const isVideoAdmin = activeView === "video-admin";
+  const showNav = (!isVideoPage && !isVideoAdmin) || showNavOverlay;
 
   return (
-    <GraphicsProvider>
-      <div className={`app-container ${isVideoPage ? "page-video-active" : ""}`}>
-        {/* Floating Menu Shortcut on Video Page */}
-        {isVideoPage && (
-          <button
-            type="button"
-            className={`video-nav-toggle-btn ${showNavOverlay ? "active" : ""}`}
-            onClick={() => setShowNavOverlay((prev) => !prev)}
-            aria-label={showNavOverlay ? "Close Navigation Menu" : "Open Navigation Menu"}
-            title={showNavOverlay ? "Close Menu" : "Menu"}
-          >
-            {showNavOverlay ? (
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
-                <line x1="18" y1="6" x2="6" y2="18"></line>
-                <line x1="6" y1="6" x2="18" y2="18"></line>
-              </svg>
-            ) : (
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
-                <line x1="3" y1="12" x2="21" y2="12"></line>
-                <line x1="3" y1="6" x2="21" y2="6"></line>
-                <line x1="3" y1="18" x2="21" y2="18"></line>
-              </svg>
-            )}
-          </button>
-        )}
-
-        {showNav && (
-          <>
-            <Header navigate={navigate} theme={theme} toggleTheme={toggleTheme} />
-            <FloatingNav activeView={activeView} navigate={navigate} />
-          </>
-        )}
-
-        <PageShell active={activeView === "home"}>
-          <HomePage navigate={navigate} setCaseStudy={setCaseStudy} />
-        </PageShell>
-
-        <PageShell active={activeView === "projects"}>
-          <ProjectsPage setCaseStudy={setCaseStudy} />
-        </PageShell>
-
-        <PageShell active={activeView === "about"}>
-          <AboutPage navigate={navigate} />
-        </PageShell>
-
-        <PageShell active={activeView === "blog"}>
-          <GraphicsDesignPage navigate={navigate} />
-        </PageShell>
-
-        <PageShell active={activeView === "admin"}>
-          {mountedViews.has("admin") && (
-            <AdminGraphicsPage navigate={navigate} />
+    <VideoProvider>
+      <GraphicsProvider>
+        <div className={`app-container ${isVideoPage ? "page-video-active" : ""}`}>
+          {/* Floating Menu Shortcut on Video Page */}
+          {isVideoPage && (
+            <button
+              type="button"
+              className={`video-nav-toggle-btn ${showNavOverlay ? "active" : ""}`}
+              onClick={() => setShowNavOverlay((prev) => !prev)}
+              aria-label={showNavOverlay ? "Close Navigation Menu" : "Open Navigation Menu"}
+              title={showNavOverlay ? "Close Menu" : "Menu"}
+            >
+              {showNavOverlay ? (
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
+                  <line x1="18" y1="6" x2="6" y2="18"></line>
+                  <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+              ) : (
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
+                  <line x1="3" y1="12" x2="21" y2="12"></line>
+                  <line x1="3" y1="6" x2="21" y2="6"></line>
+                  <line x1="3" y1="18" x2="21" y2="18"></line>
+                </svg>
+              )}
+            </button>
           )}
-        </PageShell>
 
-        <PageShell active={activeView === "video"}>
-          <VideoEditingPage />
-        </PageShell>
+          {showNav && (
+            <>
+              <Header navigate={navigate} theme={theme} toggleTheme={toggleTheme} />
+              <FloatingNav activeView={activeView} navigate={navigate} />
+            </>
+          )}
 
-        <Footer
-          formData={formData}
-          handleChange={handleChange}
-          handleSubmit={handleSubmit}
-          navigate={navigate}
-        />
+          <PageShell active={activeView === "home"}>
+            <HomePage navigate={navigate} setCaseStudy={setCaseStudy} />
+          </PageShell>
 
-        <WhatsAppFloat />
-      </div>
-    </GraphicsProvider>
+          <PageShell active={activeView === "projects"}>
+            <ProjectsPage setCaseStudy={setCaseStudy} />
+          </PageShell>
+
+          <PageShell active={activeView === "about"}>
+            <AboutPage navigate={navigate} />
+          </PageShell>
+
+          <PageShell active={activeView === "blog"}>
+            <GraphicsDesignPage navigate={navigate} />
+          </PageShell>
+
+          <PageShell active={activeView === "admin"}>
+            {mountedViews.has("admin") && (
+              <AdminGraphicsPage navigate={navigate} />
+            )}
+          </PageShell>
+
+          <PageShell active={activeView === "video"}>
+            <VideoEditingPage />
+          </PageShell>
+
+          <PageShell active={activeView === "video-admin"}>
+            {mountedViews.has("video-admin") && (
+              <AdminVideoPage navigate={navigate} />
+            )}
+          </PageShell>
+
+          {!isVideoAdmin && (
+            <Footer
+              formData={formData}
+              handleChange={handleChange}
+              handleSubmit={handleSubmit}
+              navigate={navigate}
+            />
+          )}
+
+          {!isVideoAdmin && <WhatsAppFloat />}
+        </div>
+      </GraphicsProvider>
+    </VideoProvider>
   );
 }
 

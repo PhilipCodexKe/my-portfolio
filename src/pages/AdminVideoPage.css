@@ -1,0 +1,485 @@
+.vid-admin-page {
+  min-height: 100vh;
+  background-color: #161210;
+  color: #f5ede4;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  padding-bottom: 80px;
+}
+
+/* Authentication Screen */
+.vid-admin-auth-screen {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(circle at center, #261e19 0%, #120e0c 75%);
+  padding: 24px;
+}
+
+.vid-admin-auth-card {
+  width: 100%;
+  max-width: 440px;
+  background: #1f1915;
+  border: 1px solid rgba(245, 237, 228, 0.12);
+  border-radius: 8px;
+  padding: 36px 32px;
+  text-align: center;
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.7);
+}
+
+.vid-admin-auth-badge {
+  display: inline-block;
+  font-size: 0.75rem;
+  letter-spacing: 0.2em;
+  color: #e8a895;
+  margin-bottom: 12px;
+  font-weight: 600;
+}
+
+.vid-admin-auth-card h2 {
+  margin: 0 0 10px;
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: #fff;
+}
+
+.vid-admin-auth-card p {
+  color: rgba(245, 237, 228, 0.65);
+  font-size: 0.9rem;
+  margin-bottom: 24px;
+}
+
+.vid-admin-auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.vid-admin-auth-btns {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.vid-admin-error {
+  color: #ff6b6b;
+  font-size: 0.85rem;
+}
+
+/* Header */
+.vid-admin-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 24px 40px;
+  background: #1b1613;
+  border-bottom: 1px solid rgba(245, 237, 228, 0.1);
+}
+
+.vid-admin-brand-tag {
+  font-size: 0.75rem;
+  letter-spacing: 0.2em;
+  color: #e8a895;
+  font-weight: 600;
+}
+
+.vid-admin-header h1 {
+  margin: 4px 0 0;
+  font-size: 1.5rem;
+  color: #fff;
+}
+
+.vid-admin-header-actions {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+/* Tabs */
+.vid-admin-tabs {
+  display: flex;
+  gap: 12px;
+  padding: 20px 40px;
+  background: #14100d;
+  border-bottom: 1px solid rgba(245, 237, 228, 0.08);
+}
+
+.vid-admin-tab {
+  background: transparent;
+  border: 1px solid rgba(245, 237, 228, 0.15);
+  color: rgba(245, 237, 228, 0.7);
+  padding: 10px 22px;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.vid-admin-tab:hover {
+  background: rgba(245, 237, 228, 0.05);
+  color: #fff;
+}
+
+.vid-admin-tab.active {
+  background: #e8a895;
+  color: #14100d;
+  border-color: #e8a895;
+}
+
+/* Container & Grids */
+.vid-admin-container {
+  max-width: 1400px;
+  margin: 32px auto;
+  padding: 0 40px;
+}
+
+.vid-admin-section-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 32px;
+}
+
+@media (max-width: 980px) {
+  .vid-admin-section-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Cards */
+.vid-admin-card {
+  background: #1e1814;
+  border: 1px solid rgba(245, 237, 228, 0.1);
+  border-radius: 8px;
+  padding: 28px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+}
+
+.vid-admin-card-head {
+  margin-bottom: 24px;
+}
+
+.vid-admin-card-badge {
+  font-size: 0.7rem;
+  letter-spacing: 0.18em;
+  color: #e8a895;
+  font-weight: 700;
+}
+
+.vid-admin-card-head h3 {
+  margin: 6px 0 8px;
+  font-size: 1.35rem;
+  color: #fff;
+}
+
+.vid-admin-card-head p {
+  color: rgba(245, 237, 228, 0.65);
+  font-size: 0.88rem;
+  line-height: 1.5;
+  margin: 0;
+}
+
+/* Forms */
+.vid-admin-form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.vid-admin-form-inline {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.vid-admin-label {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: rgba(245, 237, 228, 0.85);
+}
+
+.vid-admin-input {
+  width: 100%;
+  padding: 12px 14px;
+  background: #15110e;
+  border: 1px solid rgba(245, 237, 228, 0.16);
+  border-radius: 6px;
+  color: #fff;
+  font-size: 0.9rem;
+  box-sizing: border-box;
+}
+
+.vid-admin-input:focus {
+  outline: none;
+  border-color: #e8a895;
+  box-shadow: 0 0 0 2px rgba(232, 168, 149, 0.2);
+}
+
+/* Buttons */
+.vid-admin-btn-primary {
+  background: #e8a895;
+  color: #161210;
+  border: none;
+  padding: 12px 22px;
+  border-radius: 6px;
+  font-weight: 700;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.vid-admin-btn-primary:hover {
+  background: #f0beaf;
+  transform: translateY(-1px);
+}
+
+.vid-admin-btn-outline {
+  display: inline-block;
+  padding: 8px 16px;
+  background: transparent;
+  border: 1px solid rgba(245, 237, 228, 0.2);
+  color: #f5ede4;
+  text-decoration: none;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  transition: all 0.2s ease;
+}
+
+.vid-admin-btn-outline:hover {
+  background: rgba(245, 237, 228, 0.08);
+}
+
+.vid-admin-btn-secondary {
+  padding: 8px 16px;
+  background: rgba(245, 237, 228, 0.08);
+  border: 1px solid rgba(245, 237, 228, 0.15);
+  color: #f5ede4;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.vid-admin-btn-danger {
+  padding: 8px 16px;
+  background: rgba(255, 75, 75, 0.12);
+  border: 1px solid rgba(255, 75, 75, 0.3);
+  color: #ff7575;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.vid-admin-btn-link {
+  color: rgba(245, 237, 228, 0.5);
+  text-decoration: none;
+  font-size: 0.85rem;
+}
+
+.vid-admin-btn-link:hover {
+  color: #e8a895;
+}
+
+/* Previews */
+.vid-admin-preview-box {
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid rgba(245, 237, 228, 0.1);
+}
+
+.vid-admin-preview-title {
+  display: block;
+  font-size: 0.8rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(245, 237, 228, 0.5);
+  margin-bottom: 12px;
+}
+
+.vid-admin-embed-ratio {
+  position: relative;
+  width: 100%;
+  padding-top: 56.25%;
+  background: #000;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.vid-admin-embed-ratio iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border: none;
+}
+
+/* Slides List */
+.vid-admin-slides-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  gap: 14px;
+}
+
+.vid-admin-slide-item {
+  position: relative;
+  border-radius: 6px;
+  overflow: hidden;
+  background: #110d0b;
+  border: 1px solid rgba(245, 237, 228, 0.1);
+}
+
+.vid-admin-slide-item img {
+  width: 100%;
+  height: 90px;
+  object-fit: cover;
+  display: block;
+}
+
+.vid-admin-slide-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 8px;
+  font-size: 0.75rem;
+  color: rgba(245, 237, 228, 0.6);
+}
+
+.vid-admin-btn-remove {
+  background: transparent;
+  border: none;
+  color: #ff6b6b;
+  cursor: pointer;
+  font-size: 0.85rem;
+  padding: 2px 4px;
+}
+
+/* Quick picks chips */
+.vid-admin-quick-picks {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 20px;
+  font-size: 0.8rem;
+  color: rgba(245, 237, 228, 0.5);
+}
+
+.vid-admin-chip {
+  background: rgba(245, 237, 228, 0.08);
+  border: 1px solid rgba(245, 237, 228, 0.12);
+  color: rgba(245, 237, 228, 0.8);
+  padding: 4px 10px;
+  border-radius: 100px;
+  font-size: 0.75rem;
+  cursor: pointer;
+}
+
+.vid-admin-chip:hover {
+  background: rgba(232, 168, 149, 0.15);
+  color: #e8a895;
+  border-color: rgba(232, 168, 149, 0.3);
+}
+
+/* Portfolio Projects List */
+.vid-admin-project-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  max-height: 580px;
+  overflow-y: auto;
+  padding-right: 6px;
+}
+
+.vid-admin-project-item {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 12px;
+  background: #15110e;
+  border: 1px solid rgba(245, 237, 228, 0.08);
+  border-radius: 6px;
+}
+
+.vid-admin-proj-thumb {
+  width: 80px;
+  height: 55px;
+  object-fit: cover;
+  border-radius: 4px;
+}
+
+.vid-admin-proj-info {
+  flex: 1;
+}
+
+.vid-admin-proj-info h4 {
+  margin: 0 0 4px;
+  font-size: 0.95rem;
+  color: #fff;
+}
+
+.vid-admin-proj-cat {
+  font-size: 0.75rem;
+  color: #e8a895;
+  display: block;
+  margin-bottom: 2px;
+}
+
+.vid-admin-proj-link {
+  font-size: 0.75rem;
+  color: rgba(245, 237, 228, 0.5);
+  text-decoration: none;
+}
+
+.vid-admin-proj-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.vid-admin-btn-edit {
+  padding: 6px 12px;
+  background: rgba(245, 237, 228, 0.08);
+  border: 1px solid rgba(245, 237, 228, 0.15);
+  color: #fff;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.8rem;
+}
+
+.vid-admin-btn-del {
+  padding: 6px 12px;
+  background: rgba(255, 75, 75, 0.1);
+  border: 1px solid rgba(255, 75, 75, 0.25);
+  color: #ff6b6b;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.8rem;
+}
+
+/* Toast */
+.vid-admin-toast {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  background: #27ae60;
+  color: #fff;
+  padding: 12px 24px;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+  z-index: 1000;
+  animation: vidToastFade 0.3s ease;
+}
+
+@keyframes vidToastFade {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
