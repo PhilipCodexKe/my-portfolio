@@ -1,1 +1,12 @@
- https://my-portfolio-tv0z.onrender.com
+{
+  "rewrites": [
+    {
+      "source": "/api/:path*",
+      "destination": "https://my-portfolio-tv0z.onrender.com/api/:path*"
+    },
+    {
+      "source": "/uploads/:path*",
+      "destination": "https://my-portfolio-tv0z.onrender.com/uploads/:path*"
+    }
+  ]
+}
