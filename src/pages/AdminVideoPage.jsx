@@ -62,6 +62,21 @@ export default function AdminVideoPage({ navigate }) {
     setTimeout(() => setNotice(""), 3500);
   };
 
+  // Sync inputs whenever heroVideo or heroBgVideo update from database
+  useEffect(() => {
+    if (heroVideo?.url) {
+      setHeroUrlInput(heroVideo.url);
+      setHeroTitleInput(heroVideo.title || "");
+    }
+  }, [heroVideo]);
+
+  useEffect(() => {
+    if (heroBgVideo?.url) {
+      setHeroBgUrlInput(heroBgVideo.url);
+      setHeroBgTitleInput(heroBgVideo.title || "");
+    }
+  }, [heroBgVideo]);
+
   // Fetch R2 uploaded videos
   const fetchR2Videos = async () => {
     setLoadingVault(true);

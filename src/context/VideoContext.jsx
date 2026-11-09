@@ -3,12 +3,12 @@ import { createContext, useContext, useState, useEffect } from "react";
 const VideoContext = createContext();
 
 const DEFAULT_HERO_VIDEO = {
-  url: "https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1&mute=1&loop=1&playlist=dQw4w9WgXcQ&controls=1&rel=0&modestbranding=1",
+  url: "https://pub-4b3987be45504b49850b4bff3f8b2cb7.r2.dev/videos/1794227792047-1109.mp4",
   title: "Featured Showreel",
 };
 
 const DEFAULT_HERO_BG_VIDEO = {
-  url: "https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1&mute=1&loop=1&playlist=dQw4w9WgXcQ&controls=0&rel=0",
+  url: "https://pub-4b3987be45504b49850b4bff3f8b2cb7.r2.dev/videos/1794225671627-wedddiiiing.mp4",
   title: "Hero Ambient Backdrop Reel",
 };
 
@@ -17,59 +17,31 @@ const DEFAULT_HERO_SLIDES = [];
 const DEFAULT_PROJECTS = [
   {
     id: "proj-1",
-    title: "Midnight Pulse",
+    title: "Apex Horizon",
     category: "Commercial",
     thumb: "/assets/avengers.jpeg",
-    videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1",
+    videoUrl: "https://pub-4b3987be45504b49850b4bff3f8b2cb7.r2.dev/videos/1794227792047-1109.mp4",
   },
   {
     id: "proj-2",
-    title: "Apex Horizon",
-    category: "Documentary",
-    thumb: "/assets/infinite-format.png",
-    videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1",
+    title: "Wedding Story",
+    category: "Wedding",
+    thumb: "/assets/2.jpeg",
+    videoUrl: "https://pub-4b3987be45504b49850b4bff3f8b2cb7.r2.dev/videos/1794225671627-wedddiiiing.mp4",
   },
   {
     id: "proj-3",
     title: "Coast to Summit",
     category: "Travel",
     thumb: "/assets/1.jpeg",
-    videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1",
+    videoUrl: "https://pub-4b3987be45504b49850b4bff3f8b2cb7.r2.dev/videos/1794227792047-1109.mp4",
   },
   {
     id: "proj-4",
-    title: "Elegance & Vows",
-    category: "Wedding",
-    thumb: "/assets/2.jpeg",
-    videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1",
-  },
-  {
-    id: "proj-5",
     title: "Kinetic Momentum",
     category: "Fashion",
     thumb: "/assets/3.jpeg",
-    videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1",
-  },
-  {
-    id: "proj-6",
-    title: "The Quiet Hours",
-    category: "Narrative",
-    thumb: "/assets/4.jpeg",
-    videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1",
-  },
-  {
-    id: "proj-7",
-    title: "Skyline Sanctuary",
-    category: "Architectural",
-    thumb: "/assets/5.jpeg",
-    videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1",
-  },
-  {
-    id: "proj-8",
-    title: "Viral Retention",
-    category: "Shorts & Reels",
-    thumb: "/assets/6.jpeg",
-    videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1",
+    videoUrl: "https://pub-4b3987be45504b49850b4bff3f8b2cb7.r2.dev/videos/1794225671627-wedddiiiing.mp4",
   },
 ];
 
