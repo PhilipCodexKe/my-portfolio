@@ -143,6 +143,50 @@ export function VideoProvider({ children }) {
     }
   });
 
+  // 1. Fetch persistent video configuration from database on mount
+  useEffect(() => {
+    const fetchServerSettings = async () => {
+      try {
+        const res = await fetch("/api/settings/video_config");
+        if (res.ok) {
+          const config = await res.json();
+          if (config && typeof config === "object") {
+            if (config.heroVideo && config.heroVideo.url) {
+              setHeroVideo(config.heroVideo);
+            }
+            if (config.heroBgVideo && config.heroBgVideo.url) {
+              setHeroBgVideo(config.heroBgVideo);
+            }
+            if (Array.isArray(config.portfolioProjects) && config.portfolioProjects.length > 0) {
+              setPortfolioProjects(config.portfolioProjects);
+            }
+          }
+        }
+      } catch (err) {
+        console.warn("Could not sync video settings from database:", err);
+      }
+    };
+    fetchServerSettings();
+  }, []);
+
+  // Helper to persist current state to SQLite database via /api/settings/video_config
+  const syncToDatabase = async (overrides = {}) => {
+    try {
+      const payload = {
+        heroVideo: overrides.heroVideo || heroVideo,
+        heroBgVideo: overrides.heroBgVideo || heroBgVideo,
+        portfolioProjects: overrides.portfolioProjects || portfolioProjects,
+      };
+      await fetch("/api/settings/video_config", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+    } catch (err) {
+      console.warn("Failed to save video settings to database:", err);
+    }
+  };
+
   // Sync to localStorage
   useEffect(() => {
     try {
@@ -179,18 +223,22 @@ export function VideoProvider({ children }) {
   // Actions
   const updateHeroVideo = (rawUrl, title) => {
     const embedUrl = formatVideoEmbedUrl(rawUrl);
-    setHeroVideo({
+    const updated = {
       url: embedUrl || rawUrl,
       title: title || heroVideo.title,
-    });
+    };
+    setHeroVideo(updated);
+    syncToDatabase({ heroVideo: updated });
   };
 
   const updateHeroBgVideo = (rawUrl, title) => {
     const embedUrl = formatVideoEmbedUrl(rawUrl);
-    setHeroBgVideo({
+    const updated = {
       url: embedUrl || rawUrl,
       title: title || heroBgVideo.title,
-    });
+    };
+    setHeroBgVideo(updated);
+    syncToDatabase({ heroBgVideo: updated });
   };
 
   const addHeroSlide = (imageUrl) => {
@@ -210,25 +258,29 @@ export function VideoProvider({ children }) {
       thumb: project.thumb || "/assets/1.jpeg",
       videoUrl: formatVideoEmbedUrl(project.videoUrl) || project.videoUrl,
     };
-    setPortfolioProjects((prev) => [newProject, ...prev]);
+    const updatedList = [newProject, ...portfolioProjects];
+    setPortfolioProjects(updatedList);
+    syncToDatabase({ portfolioProjects: updatedList });
   };
 
   const updatePortfolioProject = (id, updatedFields) => {
-    setPortfolioProjects((prev) =>
-      prev.map((item) => {
-        if (item.id === id) {
-          const videoUrl = updatedFields.videoUrl
-            ? formatVideoEmbedUrl(updatedFields.videoUrl)
-            : item.videoUrl;
-          return { ...item, ...updatedFields, videoUrl };
-        }
-        return item;
-      })
-    );
+    const updatedList = portfolioProjects.map((item) => {
+      if (item.id === id) {
+        const videoUrl = updatedFields.videoUrl
+          ? formatVideoEmbedUrl(updatedFields.videoUrl)
+          : item.videoUrl;
+        return { ...item, ...updatedFields, videoUrl };
+      }
+      return item;
+    });
+    setPortfolioProjects(updatedList);
+    syncToDatabase({ portfolioProjects: updatedList });
   };
 
   const deletePortfolioProject = (id) => {
-    setPortfolioProjects((prev) => prev.filter((item) => item.id !== id));
+    const updatedList = portfolioProjects.filter((item) => item.id !== id);
+    setPortfolioProjects(updatedList);
+    syncToDatabase({ portfolioProjects: updatedList });
   };
 
   const resetVideoDefaults = () => {
@@ -240,6 +292,11 @@ export function VideoProvider({ children }) {
     localStorage.removeItem(STORAGE_KEYS.HERO_BG_VIDEO);
     localStorage.removeItem(STORAGE_KEYS.HERO_SLIDES);
     localStorage.removeItem(STORAGE_KEYS.PROJECTS);
+    syncToDatabase({
+      heroVideo: DEFAULT_HERO_VIDEO,
+      heroBgVideo: DEFAULT_HERO_BG_VIDEO,
+      portfolioProjects: DEFAULT_PROJECTS,
+    });
   };
 
   return (
