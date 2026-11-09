@@ -4,11 +4,32 @@ import path from "path";
 import fs from "fs";
 import multer from "multer";
 import { fileURLToPath } from "url";
+import dotenv from "dotenv";
+import {
+  S3Client,
+  PutObjectCommand,
+  ListObjectsV2Command,
+  DeleteObjectCommand,
+} from "@aws-sdk/client-s3";
+import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import db from "./db.js";
 import { seedDatabaseIfEmpty } from "./seed.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+
+// Load .env from root directory
+dotenv.config({ path: path.resolve(__dirname, "../.env") });
+
+// Cloudflare R2 Client Setup
+const r2Client = new S3Client({
+  region: "auto",
+  endpoint: `https://${process.env.CLOUDFLARE_ACCOUNT_ID}.r2.cloudflarestorage.com`,
+  credentials: {
+    accessKeyId: process.env.R2_ACCESS_KEY_ID || "",
+    secretAccessKey: process.env.R2_SECRET_ACCESS_KEY || "",
+  },
+});
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -329,7 +350,93 @@ app.put("/api/settings/:key", (req, res) => {
   }
 });
 
-// ─── 8. Optional: Serve production build on VPS ───
+// ─── 8. CLOUDFLARE R2 ENDPOINTS ───
+
+// POST /api/r2/upload-url (Generate presigned URL for direct browser-to-R2 upload)
+app.post("/api/r2/upload-url", async (req, res) => {
+  try {
+    const { fileName, fileType, folder = "videos" } = req.body;
+    if (!fileName || !fileType) {
+      return res.status(400).json({ error: "fileName and fileType are required." });
+    }
+
+    if (!process.env.R2_BUCKET_NAME || !process.env.CLOUDFLARE_ACCOUNT_ID) {
+      return res.status(500).json({ error: "Cloudflare R2 configuration missing on server." });
+    }
+
+    // Clean safe filename
+    const sanitized = fileName.replace(/[^a-zA-Z0-9._-]/g, "_");
+    const key = `${folder}/${Date.now()}-${sanitized}`;
+
+    const command = new PutObjectCommand({
+      Bucket: process.env.R2_BUCKET_NAME,
+      Key: key,
+      ContentType: fileType,
+    });
+
+    // URL valid for 60 minutes for large video uploads
+    const uploadUrl = await getSignedUrl(r2Client, command, { expiresIn: 3600 });
+    const publicDomain = (process.env.R2_PUBLIC_DOMAIN || "").replace(/\/$/, "");
+    const publicUrl = `${publicDomain}/${key}`;
+
+    res.json({
+      success: true,
+      uploadUrl,
+      publicUrl,
+      key,
+    });
+  } catch (error) {
+    console.error("Error generating R2 upload URL:", error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// GET /api/r2/videos (List uploaded videos in bucket)
+app.get("/api/r2/videos", async (req, res) => {
+  try {
+    const command = new ListObjectsV2Command({
+      Bucket: process.env.R2_BUCKET_NAME,
+      Prefix: "videos/",
+      MaxKeys: 100,
+    });
+    const response = await r2Client.send(command);
+    const publicDomain = (process.env.R2_PUBLIC_DOMAIN || "").replace(/\/$/, "");
+
+    const videos = (response.Contents || []).map((item) => ({
+      key: item.Key,
+      size: item.Size,
+      lastModified: item.LastModified,
+      url: `${publicDomain}/${item.Key}`,
+    }));
+
+    res.json({ success: true, videos });
+  } catch (error) {
+    console.error("Error listing R2 videos:", error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// DELETE /api/r2/file (Delete file from R2)
+app.post("/api/r2/delete", async (req, res) => {
+  try {
+    const { key } = req.body;
+    if (!key) {
+      return res.status(400).json({ error: "Object key is required." });
+    }
+
+    const command = new DeleteObjectCommand({
+      Bucket: process.env.R2_BUCKET_NAME,
+      Key: key,
+    });
+    await r2Client.send(command);
+    res.json({ success: true, message: `Deleted ${key}` });
+  } catch (error) {
+    console.error("Error deleting R2 object:", error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// ─── 9. Optional: Serve production build on VPS ───
 const distPath = path.join(__dirname, "../dist");
 if (fs.existsSync(distPath)) {
   app.use(express.static(distPath));

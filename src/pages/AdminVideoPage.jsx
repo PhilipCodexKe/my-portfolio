@@ -1,15 +1,16 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useVideo } from "../context/VideoContext";
+import { uploadToR2 } from "../utils/r2Upload";
+import StudioVideoPlayer from "../components/StudioVideoPlayer";
 import "./AdminVideoPage.css";
 
 export default function AdminVideoPage({ navigate }) {
   const {
     heroVideo,
-    heroSlides,
+    heroBgVideo,
     portfolioProjects,
     updateHeroVideo,
-    addHeroSlide,
-    removeHeroSlide,
+    updateHeroBgVideo,
     addPortfolioProject,
     updatePortfolioProject,
     deletePortfolioProject,
@@ -23,15 +24,20 @@ export default function AdminVideoPage({ navigate }) {
   const [passcode, setPasscode] = useState("");
   const [authError, setAuthError] = useState(false);
 
-  // Active Tab
-  const [activeTab, setActiveTab] = useState("hero"); // 'hero' | 'portfolio' | 'presets'
+  // Active Tab: 'hero' | 'portfolio' | 'vault'
+  const [activeTab, setActiveTab] = useState("hero");
 
-  // Hero Video Form
+  // Hero Foreground Video Form
   const [heroUrlInput, setHeroUrlInput] = useState(heroVideo.url || "");
   const [heroTitleInput, setHeroTitleInput] = useState(heroVideo.title || "");
+  const [heroUploading, setHeroUploading] = useState(false);
+  const [heroProgress, setHeroProgress] = useState(0);
 
-  // Hero Slide Form
-  const [newSlideUrl, setNewSlideUrl] = useState("");
+  // Hero Background Video Form (Replaces slide images)
+  const [heroBgUrlInput, setHeroBgUrlInput] = useState(heroBgVideo?.url || "");
+  const [heroBgTitleInput, setHeroBgTitleInput] = useState(heroBgVideo?.title || "");
+  const [heroBgUploading, setHeroBgUploading] = useState(false);
+  const [heroBgProgress, setHeroBgProgress] = useState(0);
 
   // Project Form
   const [editingProjectId, setEditingProjectId] = useState(null);
@@ -39,6 +45,14 @@ export default function AdminVideoPage({ navigate }) {
   const [projectCategory, setProjectCategory] = useState("Commercial");
   const [projectThumb, setProjectThumb] = useState("");
   const [projectVideoUrl, setProjectVideoUrl] = useState("");
+  const [projVideoUploading, setProjVideoUploading] = useState(false);
+  const [projVideoProgress, setProjVideoProgress] = useState(0);
+  const [projThumbUploading, setProjThumbUploading] = useState(false);
+  const [projThumbProgress, setProjThumbProgress] = useState(0);
+
+  // Cloudflare R2 Vault
+  const [r2Videos, setR2Videos] = useState([]);
+  const [loadingVault, setLoadingVault] = useState(false);
 
   // Notification Banner
   const [notice, setNotice] = useState("");
@@ -47,6 +61,28 @@ export default function AdminVideoPage({ navigate }) {
     setNotice(msg);
     setTimeout(() => setNotice(""), 3500);
   };
+
+  // Fetch R2 uploaded videos
+  const fetchR2Videos = async () => {
+    setLoadingVault(true);
+    try {
+      const res = await fetch("/api/r2/videos");
+      const data = await res.json();
+      if (data.success) {
+        setR2Videos(data.videos || []);
+      }
+    } catch (err) {
+      console.error("Error fetching R2 videos:", err);
+    } finally {
+      setLoadingVault(false);
+    }
+  };
+
+  useEffect(() => {
+    if (isAuthenticated && activeTab === "vault") {
+      fetchR2Videos();
+    }
+  }, [isAuthenticated, activeTab]);
 
   const handleLogin = (e) => {
     e.preventDefault();
@@ -64,6 +100,30 @@ export default function AdminVideoPage({ navigate }) {
     setIsAuthenticated(false);
   };
 
+  // ── Hero Video Upload to Cloudflare R2 ──
+  const handleHeroFileUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setHeroUploading(true);
+    setHeroProgress(0);
+    try {
+      const { publicUrl } = await uploadToR2(file, "videos", (pct) => {
+        setHeroProgress(pct);
+      });
+      setHeroUrlInput(publicUrl);
+      const autoTitle = heroTitleInput || file.name.replace(/\.[^/.]+$/, "");
+      setHeroTitleInput(autoTitle);
+      updateHeroVideo(publicUrl, autoTitle);
+      triggerNotice("Video successfully uploaded directly to Cloudflare R2!");
+      if (activeTab === "vault") fetchR2Videos();
+    } catch (err) {
+      alert(`Cloudflare R2 Upload Failed: ${err.message}`);
+    } finally {
+      setHeroUploading(false);
+      e.target.value = "";
+    }
+  };
+
   const handleSaveHeroVideo = (e) => {
     e.preventDefault();
     if (!heroUrlInput.trim()) return;
@@ -71,18 +131,84 @@ export default function AdminVideoPage({ navigate }) {
     triggerNotice("Hero foreground video updated successfully!");
   };
 
-  const handleAddSlide = (e) => {
+  // ── Hero Background Video Upload to Cloudflare R2 ──
+  const handleHeroBgFileUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setHeroBgUploading(true);
+    setHeroBgProgress(0);
+    try {
+      const { publicUrl } = await uploadToR2(file, "videos", (pct) => {
+        setHeroBgProgress(pct);
+      });
+      setHeroBgUrlInput(publicUrl);
+      const autoTitle = heroBgTitleInput || `${file.name.replace(/\.[^/.]+$/, "")} (Ambient)`;
+      setHeroBgTitleInput(autoTitle);
+      updateHeroBgVideo(publicUrl, autoTitle);
+      triggerNotice("Hero backdrop video uploaded directly to Cloudflare R2!");
+      if (activeTab === "vault") fetchR2Videos();
+    } catch (err) {
+      alert(`Backdrop Video Upload Failed: ${err.message}`);
+    } finally {
+      setHeroBgUploading(false);
+      e.target.value = "";
+    }
+  };
+
+  const handleSaveHeroBgVideo = (e) => {
     e.preventDefault();
-    if (!newSlideUrl.trim()) return;
-    addHeroSlide(newSlideUrl);
-    setNewSlideUrl("");
-    triggerNotice("New backdrop slideshow image added!");
+    if (!heroBgUrlInput.trim()) return;
+    updateHeroBgVideo(heroBgUrlInput, heroBgTitleInput);
+    triggerNotice("Hero backdrop video updated successfully!");
+  };
+
+  // ── Project Video Upload to R2 ──
+  const handleProjectVideoFileUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setProjVideoUploading(true);
+    setProjVideoProgress(0);
+    try {
+      const { publicUrl } = await uploadToR2(file, "videos", (pct) => {
+        setProjVideoProgress(pct);
+      });
+      setProjectVideoUrl(publicUrl);
+      if (!projectTitle.trim()) {
+        setProjectTitle(file.name.replace(/\.[^/.]+$/, ""));
+      }
+      triggerNotice("Portfolio video uploaded to Cloudflare R2!");
+    } catch (err) {
+      alert(`Upload Failed: ${err.message}`);
+    } finally {
+      setProjVideoUploading(false);
+      e.target.value = "";
+    }
+  };
+
+  // ── Project Thumbnail Upload to R2 ──
+  const handleProjectThumbFileUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setProjThumbUploading(true);
+    setProjThumbProgress(0);
+    try {
+      const { publicUrl } = await uploadToR2(file, "thumbnails", (pct) => {
+        setProjThumbProgress(pct);
+      });
+      setProjectThumb(publicUrl);
+      triggerNotice("Cover image uploaded to Cloudflare R2!");
+    } catch (err) {
+      alert(`Cover upload failed: ${err.message}`);
+    } finally {
+      setProjThumbUploading(false);
+      e.target.value = "";
+    }
   };
 
   const handleSaveProject = (e) => {
     e.preventDefault();
     if (!projectTitle.trim() || !projectVideoUrl.trim()) {
-      alert("Please provide both a Title and a Video URL.");
+      alert("Please provide both a Title and a Video URL or upload a video.");
       return;
     }
 
@@ -130,6 +256,23 @@ export default function AdminVideoPage({ navigate }) {
     setProjectVideoUrl("");
   };
 
+  const handleDeleteR2File = async (key) => {
+    if (!window.confirm(`Delete "${key}" from Cloudflare R2 permanently?`)) return;
+    try {
+      const res = await fetch("/api/r2/delete", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ key }),
+      });
+      if (res.ok) {
+        triggerNotice("Deleted from Cloudflare R2.");
+        fetchR2Videos();
+      }
+    } catch (err) {
+      alert(`Delete error: ${err.message}`);
+    }
+  };
+
   // If Not Logged In, Render Secure Passcode Gate
   if (!isAuthenticated) {
     return (
@@ -166,22 +309,26 @@ export default function AdminVideoPage({ navigate }) {
 
   return (
     <div className="vid-admin-page">
-      {/* ── Top Bar ── */}
+      {/* ── Studio Header ── */}
       <header className="vid-admin-header">
-        <div className="vid-admin-header-brand">
-          <span className="vid-admin-brand-tag">PHILIP WAFULA / STUDIO</span>
-          <h1>Video Content Manager</h1>
+        <div>
+          <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+            <span className="vid-admin-brand-tag">PHILIP WAFULA STUDIO</span>
+            <span className="vid-admin-r2-badge">☁️ Cloudflare R2 Active</span>
+          </div>
+          <h1>Video Management Hub</h1>
         </div>
 
         <div className="vid-admin-header-actions">
-          <a href="#video" className="vid-admin-btn-outline">
-            ← View Video Site
+          <a href="#video" className="vid-admin-btn-secondary">
+            ← View Video Page
           </a>
           <button
             onClick={() => {
-              if (window.confirm("Reset all videos and slides to original portfolio defaults?")) {
+              if (window.confirm("Reset all videos to original portfolio defaults?")) {
                 resetVideoDefaults();
                 setHeroUrlInput(heroVideo.url);
+                setHeroBgUrlInput(heroBgVideo?.url || "");
                 triggerNotice("Reset to defaults!");
               }
             }}
@@ -210,7 +357,13 @@ export default function AdminVideoPage({ navigate }) {
           className={`vid-admin-tab ${activeTab === "portfolio" ? "active" : ""}`}
           onClick={() => setActiveTab("portfolio")}
         >
-          📁 2. Portfolio Project Showcase ({portfolioProjects.length})
+          📁 2. Portfolio Projects ({portfolioProjects.length})
+        </button>
+        <button
+          className={`vid-admin-tab ${activeTab === "vault" ? "active" : ""}`}
+          onClick={() => setActiveTab("vault")}
+        >
+          ☁️ 3. Cloudflare R2 Vault ({r2Videos.length})
         </button>
       </div>
 
@@ -224,18 +377,55 @@ export default function AdminVideoPage({ navigate }) {
                 <span className="vid-admin-card-badge">FRONT LAYER</span>
                 <h3>Hero Foreground Video</h3>
                 <p>
-                  Paste any YouTube URL, Vimeo link, or embed code. This will play in the centered box overlapping the background.
+                  Upload your video file directly to <strong>Cloudflare R2</strong> or paste an embed link (YouTube / Vimeo).
                 </p>
+              </div>
+
+              {/* R2 Direct Upload Box */}
+              <div className="vid-admin-upload-zone">
+                <input
+                  type="file"
+                  accept="video/mp4,video/webm,video/quicktime,video/mov"
+                  onChange={handleHeroFileUpload}
+                  disabled={heroUploading}
+                  className="vid-admin-hidden-file"
+                />
+                <span className="vid-admin-upload-icon">{heroUploading ? "⏳" : "📤"}</span>
+                <div className="vid-admin-upload-title">
+                  {heroUploading ? "Uploading to Cloudflare R2..." : "Click or Drop Video Here (.mp4, .webm, .mov)"}
+                </div>
+                <div className="vid-admin-upload-sub">
+                  Streams with zero latency via Cloudflare edge storage
+                </div>
+              </div>
+
+              {heroUploading && (
+                <div className="vid-admin-progress-box">
+                  <div className="vid-admin-progress-head">
+                    <span>Uploading direct to R2...</span>
+                    <span>{heroProgress}%</span>
+                  </div>
+                  <div className="vid-admin-progress-track">
+                    <div
+                      className="vid-admin-progress-bar"
+                      style={{ width: `${heroProgress}%` }}
+                    />
+                  </div>
+                </div>
+              )}
+
+              <div style={{ margin: "16px 0 10px", textAlign: "center", fontSize: "0.8rem", color: "rgba(245,237,228,0.4)" }}>
+                — OR ENTER URL MANUALLY —
               </div>
 
               <form onSubmit={handleSaveHeroVideo} className="vid-admin-form">
                 <label className="vid-admin-label">
-                  Video Embed / Watch Link
+                  Video URL or Embed Link
                   <input
                     type="text"
                     value={heroUrlInput}
                     onChange={(e) => setHeroUrlInput(e.target.value)}
-                    placeholder="https://www.youtube.com/watch?v=... or https://vimeo.com/..."
+                    placeholder="https://pub-...r2.dev/videos/... or https://youtube.com/..."
                     className="vid-admin-input"
                     required
                   />
@@ -261,78 +451,117 @@ export default function AdminVideoPage({ navigate }) {
               <div className="vid-admin-preview-box">
                 <span className="vid-admin-preview-title">Current Live Preview</span>
                 <div className="vid-admin-embed-ratio">
-                  <iframe
+                  <StudioVideoPlayer
                     src={heroVideo.url}
                     title="Live Hero Preview"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope"
+                    controls={true}
+                    autoPlay={false}
+                    muted={true}
                   />
                 </div>
               </div>
             </div>
 
-            {/* Right: Background Slideshow Images */}
+            {/* Right: Background Ambient Video (Replaces Image Slideshow) */}
             <div className="vid-admin-card">
               <div className="vid-admin-card-head">
                 <span className="vid-admin-card-badge">BACK LAYER</span>
-                <h3>Hero Background Slideshow</h3>
+                <h3>Hero Background Video (Backdrop Reel)</h3>
                 <p>
-                  These images automatically crossfade in the background behind the video.
+                  Upload an ambient video to <strong>Cloudflare R2</strong> to play silently in a cinematic loop behind the foreground showreel.
                 </p>
               </div>
 
-              {/* Add New Slide Form */}
-              <form onSubmit={handleAddSlide} className="vid-admin-form-inline">
+              {/* R2 Direct Upload Box for Background Video */}
+              <div className="vid-admin-upload-zone">
                 <input
-                  type="text"
-                  value={newSlideUrl}
-                  onChange={(e) => setNewSlideUrl(e.target.value)}
-                  placeholder="Image URL or project path (e.g. /assets/1.jpeg)"
-                  className="vid-admin-input"
+                  type="file"
+                  accept="video/mp4,video/webm,video/quicktime,video/mov"
+                  onChange={handleHeroBgFileUpload}
+                  disabled={heroBgUploading}
+                  className="vid-admin-hidden-file"
                 />
-                <button type="submit" className="vid-admin-btn-primary">
-                  Add Slide
-                </button>
-              </form>
-
-              {/* Quick Presets */}
-              <div className="vid-admin-quick-picks">
-                <span>Quick Assets:</span>
-                {["/assets/1.jpeg", "/assets/2.jpeg", "/assets/3.jpeg", "/assets/avengers.jpeg", "/assets/infinite-format.png"].map(
-                  (path) => (
-                    <button
-                      key={path}
-                      type="button"
-                      className="vid-admin-chip"
-                      onClick={() => setNewSlideUrl(path)}
-                    >
-                      +{path.split("/").pop()}
-                    </button>
-                  )
-                )}
+                <span className="vid-admin-upload-icon">{heroBgUploading ? "⏳" : "🎬"}</span>
+                <div className="vid-admin-upload-title">
+                  {heroBgUploading ? "Uploading backdrop video to R2..." : "Click or Drop Background Video Here"}
+                </div>
+                <div className="vid-admin-upload-sub">
+                  MP4 / WebM / MOV • Loops seamlessly behind the hero
+                </div>
               </div>
 
-              {/* Existing Slides List */}
-              <div className="vid-admin-slides-list">
-                <span className="vid-admin-preview-title">
-                  Active Slides ({heroSlides.length})
-                </span>
-                <div className="vid-admin-slides-grid">
-                  {heroSlides.map((slide, idx) => (
-                    <div key={idx} className="vid-admin-slide-item">
-                      <img src={slide} alt={`Slide ${idx + 1}`} />
-                      <div className="vid-admin-slide-meta">
-                        <span>Slide #{idx + 1}</span>
-                        <button
-                          type="button"
-                          onClick={() => removeHeroSlide(idx)}
-                          className="vid-admin-btn-remove"
-                          title="Remove Slide"
-                        >
-                          ✕
-                        </button>
-                      </div>
-                    </div>
-                  ))}
+              {heroBgUploading && (
+                <div className="vid-admin-progress-box">
+                  <div className="vid-admin-progress-head">
+                    <span>Uploading direct to R2...</span>
+                    <span>{heroBgProgress}%</span>
+                  </div>
+                  <div className="vid-admin-progress-track">
+                    <div
+                      className="vid-admin-progress-bar"
+                      style={{ width: `${heroBgProgress}%` }}
+                    />
+                  </div>
+                </div>
+              )}
+
+              <div style={{ margin: "16px 0 10px", textAlign: "center", fontSize: "0.8rem", color: "rgba(245,237,228,0.4)" }}>
+                — OR ENTER URL MANUALLY —
+              </div>
+
+              <form onSubmit={handleSaveHeroBgVideo} className="vid-admin-form">
+                <label className="vid-admin-label">
+                  Backdrop Video URL
+                  <input
+                    type="text"
+                    value={heroBgUrlInput}
+                    onChange={(e) => setHeroBgUrlInput(e.target.value)}
+                    placeholder="https://pub-...r2.dev/videos/... or https://youtube.com/..."
+                    className="vid-admin-input"
+                    required
+                  />
+                </label>
+
+                <label className="vid-admin-label">
+                  Backdrop Title (Optional)
+                  <input
+                    type="text"
+                    value={heroBgTitleInput}
+                    onChange={(e) => setHeroBgTitleInput(e.target.value)}
+                    placeholder="Atmospheric Reel"
+                    className="vid-admin-input"
+                  />
+                </label>
+
+                <div className="vid-admin-form-actions">
+                  <button type="submit" className="vid-admin-btn-primary">
+                    Save Background Video
+                  </button>
+                  <button
+                    type="button"
+                    className="vid-admin-btn-secondary"
+                    onClick={() => {
+                      setHeroBgUrlInput(heroUrlInput);
+                      updateHeroBgVideo(heroUrlInput, `${heroTitleInput || "Hero Video"} (Backdrop)`);
+                      triggerNotice("Copied foreground video to backdrop!");
+                    }}
+                  >
+                    Match Foreground
+                  </button>
+                </div>
+              </form>
+
+              {/* Current Background Preview */}
+              <div className="vid-admin-preview-box" style={{ marginTop: "20px" }}>
+                <span className="vid-admin-preview-title">Current Backdrop Preview</span>
+                <div className="vid-admin-embed-ratio">
+                  <StudioVideoPlayer
+                    src={heroBgVideo?.url || heroVideo.url}
+                    title="Live Hero Backdrop Preview"
+                    controls={true}
+                    autoPlay={false}
+                    muted={true}
+                  />
                 </div>
               </div>
             </div>
@@ -349,7 +578,7 @@ export default function AdminVideoPage({ navigate }) {
                   {editingProjectId ? "EDIT PROJECT" : "NEW PROJECT"}
                 </span>
                 <h3>{editingProjectId ? "Edit Portfolio Video" : "Add New Video Project"}</h3>
-                <p>Link a video to the portfolio grid with custom thumbnail and category.</p>
+                <p>Upload a video or link from Cloudflare R2 / YouTube with a custom cover.</p>
               </div>
 
               <form onSubmit={handleSaveProject} className="vid-admin-form">
@@ -359,7 +588,7 @@ export default function AdminVideoPage({ navigate }) {
                     type="text"
                     value={projectTitle}
                     onChange={(e) => setProjectTitle(e.target.value)}
-                    placeholder="e.g. Apex Horizon"
+                    placeholder="e.g. Cinematic Showreel 2026"
                     className="vid-admin-input"
                     required
                   />
@@ -383,20 +612,80 @@ export default function AdminVideoPage({ navigate }) {
                   </select>
                 </label>
 
+                {/* Video URL & Upload */}
                 <label className="vid-admin-label">
-                  Video URL (YouTube or Vimeo)
+                  Video Source
+                  <div className="vid-admin-upload-zone" style={{ padding: "12px", margin: "6px 0 10px" }}>
+                    <input
+                      type="file"
+                      accept="video/mp4,video/webm,video/quicktime,video/mov"
+                      onChange={handleProjectVideoFileUpload}
+                      disabled={projVideoUploading}
+                      className="vid-admin-hidden-file"
+                    />
+                    <span className="vid-admin-upload-icon" style={{ fontSize: "1.3rem" }}>🎬</span>
+                    <div className="vid-admin-upload-title" style={{ fontSize: "0.85rem" }}>
+                      {projVideoUploading ? "Uploading to Cloudflare R2..." : "Upload Video File to Cloudflare R2"}
+                    </div>
+                  </div>
+
+                  {projVideoUploading && (
+                    <div className="vid-admin-progress-box">
+                      <div className="vid-admin-progress-head">
+                        <span>Uploading video...</span>
+                        <span>{projVideoProgress}%</span>
+                      </div>
+                      <div className="vid-admin-progress-track">
+                        <div
+                          className="vid-admin-progress-bar"
+                          style={{ width: `${projVideoProgress}%` }}
+                        />
+                      </div>
+                    </div>
+                  )}
+
                   <input
                     type="text"
                     value={projectVideoUrl}
                     onChange={(e) => setProjectVideoUrl(e.target.value)}
-                    placeholder="https://www.youtube.com/watch?v=..."
+                    placeholder="https://pub-...r2.dev/videos/... or https://youtube.com/..."
                     className="vid-admin-input"
                     required
                   />
                 </label>
 
+                {/* Thumbnail Image */}
                 <label className="vid-admin-label">
-                  Cover Thumbnail Image URL
+                  Cover Thumbnail Image
+                  <div className="vid-admin-upload-zone" style={{ padding: "10px", margin: "6px 0 10px" }}>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleProjectThumbFileUpload}
+                      disabled={projThumbUploading}
+                      className="vid-admin-hidden-file"
+                    />
+                    <span className="vid-admin-upload-icon" style={{ fontSize: "1.2rem" }}>🖼️</span>
+                    <div className="vid-admin-upload-title" style={{ fontSize: "0.85rem" }}>
+                      {projThumbUploading ? "Uploading cover..." : "Upload Cover Image to R2"}
+                    </div>
+                  </div>
+
+                  {projThumbUploading && (
+                    <div className="vid-admin-progress-box">
+                      <div className="vid-admin-progress-head">
+                        <span>Uploading image...</span>
+                        <span>{projThumbProgress}%</span>
+                      </div>
+                      <div className="vid-admin-progress-track">
+                        <div
+                          className="vid-admin-progress-bar"
+                          style={{ width: `${projThumbProgress}%` }}
+                        />
+                      </div>
+                    </div>
+                  )}
+
                   <input
                     type="text"
                     value={projectThumb}
@@ -479,6 +768,104 @@ export default function AdminVideoPage({ navigate }) {
                 ))}
               </div>
             </div>
+          </div>
+        )}
+
+        {/* ── TAB 3: CLOUDFLARE R2 VAULT ── */}
+        {activeTab === "vault" && (
+          <div className="vid-admin-card">
+            <div className="vid-admin-card-head" style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+              <div>
+                <span className="vid-admin-card-badge">STORAGE BUCKET</span>
+                <h3>Cloudflare R2 Media Vault</h3>
+                <p>All videos stored in your <strong>myportofoliovideos</strong> bucket.</p>
+              </div>
+              <button
+                type="button"
+                onClick={fetchR2Videos}
+                className="vid-admin-btn-secondary"
+                disabled={loadingVault}
+              >
+                {loadingVault ? "Refreshing..." : "🔄 Refresh Vault"}
+              </button>
+            </div>
+
+            {loadingVault ? (
+              <div style={{ textAlign: "center", padding: "40px", color: "rgba(245,237,228,0.6)" }}>
+                Loading files from Cloudflare R2...
+              </div>
+            ) : r2Videos.length === 0 ? (
+              <div style={{ textAlign: "center", padding: "40px", color: "rgba(245,237,228,0.5)" }}>
+                No videos uploaded to R2 yet. Upload your first video from Tab 1 or Tab 2 above!
+              </div>
+            ) : (
+              <div className="vid-admin-vault-grid">
+                {r2Videos.map((item) => (
+                  <div key={item.key} className="vid-admin-vault-card">
+                    <div className="vid-admin-vault-media">
+                      <StudioVideoPlayer
+                        src={item.url}
+                        controls={true}
+                        muted={true}
+                        autoPlay={false}
+                      />
+                    </div>
+                    <div className="vid-admin-vault-details">
+                      <div className="vid-admin-vault-name" title={item.key}>
+                        {item.key.replace(/^videos\/\d+-/, "")}
+                      </div>
+                      <div className="vid-admin-vault-meta">
+                        <span>{(item.size / (1024 * 1024)).toFixed(2)} MB</span>
+                        <span>{new Date(item.lastModified).toLocaleDateString()}</span>
+                      </div>
+                      <div className="vid-admin-vault-actions" style={{ flexWrap: "wrap" }}>
+                        <button
+                          type="button"
+                          className="vid-admin-btn-action"
+                          onClick={() => {
+                            navigator.clipboard.writeText(item.url);
+                            triggerNotice("Direct video URL copied to clipboard!");
+                          }}
+                        >
+                          📋 Copy URL
+                        </button>
+                        <button
+                          type="button"
+                          className="vid-admin-btn-action"
+                          onClick={() => {
+                            updateHeroVideo(item.url, item.key.replace(/^videos\/\d+-/, ""));
+                            setHeroUrlInput(item.url);
+                            triggerNotice("Assigned as Hero Foreground Video!");
+                          }}
+                        >
+                          🎬 As Foreground
+                        </button>
+                        <button
+                          type="button"
+                          className="vid-admin-btn-action"
+                          onClick={() => {
+                            updateHeroBgVideo(item.url, `${item.key.replace(/^videos\/\d+-/, "")} (Backdrop)`);
+                            setHeroBgUrlInput(item.url);
+                            triggerNotice("Assigned as Hero Background Video!");
+                          }}
+                        >
+                          🌌 As Backdrop
+                        </button>
+                        <button
+                          type="button"
+                          className="vid-admin-btn-action"
+                          style={{ color: "#ff6b6b", flex: "0 0 32px" }}
+                          onClick={() => handleDeleteR2File(item.key)}
+                          title="Delete from R2"
+                        >
+                          🗑️
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         )}
       </div>

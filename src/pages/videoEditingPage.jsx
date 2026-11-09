@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useVideo } from "../context/VideoContext";
+import StudioVideoPlayer from "../components/StudioVideoPlayer";
 import "./videoEditingPage.css";
 
 /* ── Skills & Toolkit Data ── */
@@ -55,21 +56,12 @@ const TOOLS = [
 ];
 
 export default function VideoEditingPage() {
-  const { heroVideo, heroSlides, portfolioProjects } = useVideo();
+  const { heroVideo, heroBgVideo, portfolioProjects } = useVideo();
 
   const [showreelPlaying, setShowreelPlaying] = useState(false);
   const [activeModalProject, setActiveModalProject] = useState(null);
   const [newsletterEmail, setNewsletterEmail] = useState("");
   const [newsletterSubscribed, setNewsletterSubscribed] = useState(false);
-  const [currentSlide, setCurrentSlide] = useState(0);
-
-  useEffect(() => {
-    if (!heroSlides || heroSlides.length === 0) return;
-    const timer = setInterval(() => {
-      setCurrentSlide((prev) => (prev + 1) % heroSlides.length);
-    }, 4500);
-    return () => clearInterval(timer);
-  }, [heroSlides]);
 
   /* ── Smooth scroll to section ── */
   const scrollToSection = (e, id) => {
@@ -171,29 +163,32 @@ export default function VideoEditingPage() {
             </h1>
           </div>
 
-          {/* Layered Media Stage: Slideshow Behind + Video In Front */}
+          {/* Layered Media Stage: Background Video Behind + Foreground Video In Front */}
           <div className="vid-hero-stage">
-            {/* Background Slideshow (Bigger, Behind) */}
+            {/* Background Ambient Video (Bigger, Behind) */}
             <div className="vid-hero-slideshow">
-              {heroSlides.map((slide, idx) => (
-                <img
-                  key={idx}
-                  src={slide}
-                  alt={`Hero slide ${idx + 1}`}
-                  className={`vid-hero-slide-img ${idx === currentSlide ? "active" : ""}`}
-                />
-              ))}
+              <StudioVideoPlayer
+                className="vid-hero-bg-video-media"
+                src={heroBgVideo?.url || heroVideo?.url}
+                title={heroBgVideo?.title || "Hero Ambient Reel"}
+                autoPlay={true}
+                muted={true}
+                loop={true}
+                controls={false}
+              />
               <div className="vid-hero-slideshow-overlay" />
             </div>
 
-            {/* Foreground Video */}
+            {/* Foreground Video (Clean Blank Video Canvas with No Controls) */}
             <div className="vid-hero-video-box">
-              <iframe
+              <StudioVideoPlayer
                 className="vid-hero-video-iframe"
                 src={heroVideo.url}
                 title={heroVideo.title || "Featured Reel"}
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowFullScreen
+                autoPlay={true}
+                muted={true}
+                loop={true}
+                controls={false}
               />
             </div>
           </div>
@@ -616,11 +611,12 @@ export default function VideoEditingPage() {
             </button>
 
             <div className="vid-modal-player-box">
-              <iframe
+              <StudioVideoPlayer
                 src={activeModalProject.videoUrl}
                 title={activeModalProject.title}
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowFullScreen
+                autoPlay={true}
+                controls={true}
+                className="vid-modal-player"
               />
             </div>
 

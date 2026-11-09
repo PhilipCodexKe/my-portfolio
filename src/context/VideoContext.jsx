@@ -7,13 +7,12 @@ const DEFAULT_HERO_VIDEO = {
   title: "Featured Showreel",
 };
 
-const DEFAULT_HERO_SLIDES = [
-  "/assets/1.jpeg",
-  "/assets/infinite-format.png",
-  "/assets/2.jpeg",
-  "/assets/avengers.jpeg",
-  "/assets/3.jpeg",
-];
+const DEFAULT_HERO_BG_VIDEO = {
+  url: "https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1&mute=1&loop=1&playlist=dQw4w9WgXcQ&controls=0&rel=0",
+  title: "Hero Ambient Backdrop Reel",
+};
+
+const DEFAULT_HERO_SLIDES = [];
 
 const DEFAULT_PROJECTS = [
   {
@@ -76,6 +75,7 @@ const DEFAULT_PROJECTS = [
 
 const STORAGE_KEYS = {
   HERO_VIDEO: "philip_video_hero_video",
+  HERO_BG_VIDEO: "philip_video_hero_bg_video",
   HERO_SLIDES: "philip_video_hero_slides",
   PROJECTS: "philip_video_projects",
 };
@@ -116,6 +116,15 @@ export function VideoProvider({ children }) {
     }
   });
 
+  const [heroBgVideo, setHeroBgVideo] = useState(() => {
+    try {
+      const stored = localStorage.getItem(STORAGE_KEYS.HERO_BG_VIDEO);
+      return stored ? JSON.parse(stored) : DEFAULT_HERO_BG_VIDEO;
+    } catch {
+      return DEFAULT_HERO_BG_VIDEO;
+    }
+  });
+
   const [heroSlides, setHeroSlides] = useState(() => {
     try {
       const stored = localStorage.getItem(STORAGE_KEYS.HERO_SLIDES);
@@ -145,6 +154,14 @@ export function VideoProvider({ children }) {
 
   useEffect(() => {
     try {
+      localStorage.setItem(STORAGE_KEYS.HERO_BG_VIDEO, JSON.stringify(heroBgVideo));
+    } catch (e) {
+      console.warn("Failed to persist hero bg video", e);
+    }
+  }, [heroBgVideo]);
+
+  useEffect(() => {
+    try {
       localStorage.setItem(STORAGE_KEYS.HERO_SLIDES, JSON.stringify(heroSlides));
     } catch (e) {
       console.warn("Failed to persist hero slides", e);
@@ -165,6 +182,14 @@ export function VideoProvider({ children }) {
     setHeroVideo({
       url: embedUrl || rawUrl,
       title: title || heroVideo.title,
+    });
+  };
+
+  const updateHeroBgVideo = (rawUrl, title) => {
+    const embedUrl = formatVideoEmbedUrl(rawUrl);
+    setHeroBgVideo({
+      url: embedUrl || rawUrl,
+      title: title || heroBgVideo.title,
     });
   };
 
@@ -208,9 +233,11 @@ export function VideoProvider({ children }) {
 
   const resetVideoDefaults = () => {
     setHeroVideo(DEFAULT_HERO_VIDEO);
+    setHeroBgVideo(DEFAULT_HERO_BG_VIDEO);
     setHeroSlides(DEFAULT_HERO_SLIDES);
     setPortfolioProjects(DEFAULT_PROJECTS);
     localStorage.removeItem(STORAGE_KEYS.HERO_VIDEO);
+    localStorage.removeItem(STORAGE_KEYS.HERO_BG_VIDEO);
     localStorage.removeItem(STORAGE_KEYS.HERO_SLIDES);
     localStorage.removeItem(STORAGE_KEYS.PROJECTS);
   };
@@ -219,9 +246,11 @@ export function VideoProvider({ children }) {
     <VideoContext.Provider
       value={{
         heroVideo,
+        heroBgVideo,
         heroSlides,
         portfolioProjects,
         updateHeroVideo,
+        updateHeroBgVideo,
         addHeroSlide,
         removeHeroSlide,
         addPortfolioProject,
