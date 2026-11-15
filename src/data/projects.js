@@ -15,7 +15,7 @@ export const projects = [
     category: "Web App",
     industry: "Education",
     img: "/assets/school-connect-new.png",
-    link: "https://schoolconnect.co.ke/",
+    link: "https://school-connect-frontendd.onrender.com/",
   },
   {
     id: "electro-pos",
